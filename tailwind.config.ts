@@ -29,6 +29,11 @@ export default {
           hover: "#7E69AB",
           light: "#D6BCFA",
         },
+        fandom: {
+          primary: "#EA1157",
+          secondary: "#2E0916",
+          accent: "#FFD700",
+        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",

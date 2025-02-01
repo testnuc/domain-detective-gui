@@ -18,24 +18,24 @@ const ResultCard = ({ result }: ResultCardProps) => {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold text-white">{result.name}</h3>
-          <span className="text-white/80 font-medium text-sm px-3 py-1 bg-white/10 rounded-full">
+          <span className="text-fandom-accent font-medium text-sm px-3 py-1 bg-black/20 rounded-full">
             {result.company}
           </span>
         </div>
         
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3 text-white/90">
-            <Mail className="w-4 h-4 text-white/70" />
+            <Mail className="w-4 h-4 text-fandom-accent" />
             <span className="font-medium">{result.email}</span>
           </div>
           
           <div className="flex items-center gap-3 text-white/80">
-            <Briefcase className="w-4 h-4 text-white/70" />
+            <Briefcase className="w-4 h-4 text-fandom-accent" />
             <span>{result.designation}</span>
           </div>
           
           <div className="flex items-center gap-3 text-white/80">
-            <Building2 className="w-4 h-4 text-white/70" />
+            <Building2 className="w-4 h-4 text-fandom-accent" />
             <span>{result.company}</span>
           </div>
         </div>

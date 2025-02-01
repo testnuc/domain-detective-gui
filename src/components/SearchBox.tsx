@@ -39,7 +39,7 @@ const SearchBox = ({ onSearch, isLoading }: SearchBoxProps) => {
   return (
     <div className="search-container">
       <form onSubmit={handleSubmit} className="relative">
-        <div className="glass rounded-2xl p-1.5 flex gap-2">
+        <div className="glass rounded-full p-1.5 flex gap-2">
           <div className="relative flex-1 flex items-center">
             <Command className="absolute left-4 h-5 w-5 text-white/60" />
             <Input
@@ -53,11 +53,11 @@ const SearchBox = ({ onSearch, isLoading }: SearchBoxProps) => {
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg h-auto rounded-xl transition-all duration-200 disabled:bg-white/5 disabled:text-white/40"
+            className="bg-fandom-accent hover:bg-fandom-accent/90 text-fandom-secondary px-8 py-6 text-lg h-auto rounded-full transition-all duration-200 disabled:bg-white/5 disabled:text-white/40 font-semibold"
           >
             {isLoading ? (
               <>
-                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-fandom-secondary border-t-transparent mr-2"></div>
                 Searching...
               </>
             ) : (
