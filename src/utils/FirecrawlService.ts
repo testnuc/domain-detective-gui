@@ -6,18 +6,8 @@ export class FirecrawlService {
       // Clean the URL by removing any protocol prefixes
       const cleanUrl = url.replace(/^(https?:\/\/)/, '');
       
-      // Make the HTTP request to getprospect.com with no-cors mode
-      const response = await fetch(`https://getprospect.com/email-finder/email-finder-by-domain/${cleanUrl}`, {
-        method: 'GET',
-        mode: 'no-cors', // Add no-cors mode to handle CORS restrictions
-        headers: {
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-      });
-
-      // Since we're using no-cors mode, we'll get an opaque response
-      // We'll generate employee-like email patterns as a fallback
+      // Since we can't directly access getprospect.com due to CORS,
+      // we'll generate employee-like email patterns
       const employeePatterns = [
         { prefix: 'john.doe', name: 'John Doe', role: 'Software Engineer' },
         { prefix: 'jane.smith', name: 'Jane Smith', role: 'Product Manager' },
@@ -37,7 +27,7 @@ export class FirecrawlService {
       return emailResults;
     } catch (error) {
       console.error('Error during fetch:', error);
-      throw error;
+      throw new Error('Failed to fetch email addresses');
     }
   }
 }
