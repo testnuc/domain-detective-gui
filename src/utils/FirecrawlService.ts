@@ -1,32 +1,58 @@
+import FirecrawlApp from '@mendable/firecrawl-js';
 import { EmailResult } from '@/components/ResultCard';
 
 export class FirecrawlService {
+  private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
+  private static firecrawlApp: FirecrawlApp | null = null;
+
+  static saveApiKey(apiKey: string): void {
+    localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
+    this.firecrawlApp = new FirecrawlApp({ apiKey });
+  }
+
+  static getApiKey(): string | null {
+    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
+  }
+
   static async crawlWebsite(url: string): Promise<EmailResult[]> {
     try {
-      // Clean the URL by removing any protocol prefixes
-      const cleanUrl = url.replace(/^(https?:\/\/)/, '');
-      
-      // Since we can't directly access getprospect.com due to CORS,
-      // we'll generate employee-like email patterns
-      const employeePatterns = [
-        { prefix: 'john.doe', name: 'John Doe', role: 'Software Engineer' },
-        { prefix: 'jane.smith', name: 'Jane Smith', role: 'Product Manager' },
-        { prefix: 'mike.johnson', name: 'Mike Johnson', role: 'Sales Director' },
-        { prefix: 'sarah.williams', name: 'Sarah Williams', role: 'Marketing Manager' },
-        { prefix: 'david.brown', name: 'David Brown', role: 'Business Analyst' }
-      ];
-      
-      // Generate email results based on employee patterns
-      const emailResults: EmailResult[] = employeePatterns.map(pattern => ({
-        name: pattern.name,
-        email: `${pattern.prefix}@${cleanUrl}`,
-        designation: pattern.role,
-        company: cleanUrl
+      const apiKey = this.getApiKey();
+      if (!apiKey) {
+        throw new Error('API key not found. Please set your Firecrawl API key first.');
+      }
+
+      if (!this.firecrawlApp) {
+        this.firecrawlApp = new FirecrawlApp({ apiKey });
+      }
+
+      const response = await this.firecrawlApp.crawlUrl(url, {
+        limit: 100,
+        scrapeOptions: {
+          formats: ['markdown', 'html'],
+          selectors: {
+            emails: true,
+            names: true,
+            titles: true,
+            companies: true
+          }
+        }
+      });
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to crawl website');
+      }
+
+      // Transform the Firecrawl response into EmailResult format
+      const emailResults: EmailResult[] = response.data.map(item => ({
+        name: item.name || 'Unknown',
+        email: item.email,
+        designation: item.title || 'Employee',
+        company: item.company || url.replace(/^(https?:\/\/)/, '')
       }));
 
       return emailResults;
     } catch (error) {
-      console.error('Error during fetch:', error);
+      console.error('Error during crawl:', error);
       throw new Error('Failed to fetch email addresses');
     }
   }
