@@ -1,6 +1,23 @@
 import FirecrawlApp from '@mendable/firecrawl-js';
 import { EmailResult } from '@/components/ResultCard';
 
+interface ErrorResponse {
+  success: false;
+  error: string;
+}
+
+interface CrawlStatusResponse {
+  success: true;
+  status: string;
+  completed: number;
+  total: number;
+  creditsUsed: number;
+  expiresAt: string;
+  data: any[];
+}
+
+type CrawlResponse = CrawlStatusResponse | ErrorResponse;
+
 export class FirecrawlService {
   private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
   private static firecrawlApp: FirecrawlApp | null = null;
@@ -28,13 +45,7 @@ export class FirecrawlService {
       const response = await this.firecrawlApp.crawlUrl(url, {
         limit: 100,
         scrapeOptions: {
-          formats: ['markdown', 'html'],
-          selectors: {
-            emails: true,
-            names: true,
-            titles: true,
-            companies: true
-          }
+          formats: ['markdown', 'html']
         }
       });
 
@@ -43,12 +54,15 @@ export class FirecrawlService {
       }
 
       // Transform the Firecrawl response into EmailResult format
-      const emailResults: EmailResult[] = response.data.map(item => ({
-        name: item.name || 'Unknown',
-        email: item.email,
-        designation: item.title || 'Employee',
-        company: item.company || url.replace(/^(https?:\/\/)/, '')
-      }));
+      // Since we don't know the exact structure, we'll try to extract what we can
+      const emailResults: EmailResult[] = response.data
+        .filter(item => item && typeof item === 'object')
+        .map(item => ({
+          name: item.name || 'Unknown',
+          email: item.email || '',
+          designation: item.title || 'Employee',
+          company: item.company || url.replace(/^(https?:\/\/)/, '')
+        }));
 
       return emailResults;
     } catch (error) {
