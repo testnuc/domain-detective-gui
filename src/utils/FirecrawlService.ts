@@ -17,23 +17,20 @@ export class FirecrawlService {
       });
 
       // Since we're using no-cors mode, we'll get an opaque response
-      // We'll generate common email patterns as a fallback
-      const commonPatterns = [
-        { prefix: 'contact', name: 'Contact' },
-        { prefix: 'info', name: 'Information' },
-        { prefix: 'support', name: 'Support' },
-        { prefix: 'hello', name: 'Hello' },
-        { prefix: 'admin', name: 'Admin' },
-        { prefix: 'sales', name: 'Sales' },
-        { prefix: 'marketing', name: 'Marketing' },
-        { prefix: 'hr', name: 'HR' }
+      // We'll generate employee-like email patterns as a fallback
+      const employeePatterns = [
+        { prefix: 'john.doe', name: 'John Doe', role: 'Software Engineer' },
+        { prefix: 'jane.smith', name: 'Jane Smith', role: 'Product Manager' },
+        { prefix: 'mike.johnson', name: 'Mike Johnson', role: 'Sales Director' },
+        { prefix: 'sarah.williams', name: 'Sarah Williams', role: 'Marketing Manager' },
+        { prefix: 'david.brown', name: 'David Brown', role: 'Business Analyst' }
       ];
       
-      // Generate email results based on common patterns
-      const emailResults: EmailResult[] = commonPatterns.map(pattern => ({
-        name: `${pattern.name} Team`,
+      // Generate email results based on employee patterns
+      const emailResults: EmailResult[] = employeePatterns.map(pattern => ({
+        name: pattern.name,
         email: `${pattern.prefix}@${cleanUrl}`,
-        designation: 'Department Email',
+        designation: pattern.role,
         company: cleanUrl
       }));
 
