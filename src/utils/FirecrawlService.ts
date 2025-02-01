@@ -1,4 +1,5 @@
 import FirecrawlApp from '@mendable/firecrawl-js';
+import { EmailResult } from '@/components/ResultCard';
 
 interface ErrorResponse {
   success: false;
@@ -46,8 +47,7 @@ export class FirecrawlService {
       const crawlResponse = await this.firecrawlApp.crawlUrl(url, {
         limit: 100,
         scrapeOptions: {
-          formats: ['markdown', 'html'],
-          extractEmails: true
+          formats: ['markdown', 'html']
         }
       }) as CrawlResponse;
 
