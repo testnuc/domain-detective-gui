@@ -114,7 +114,7 @@ const Index = () => {
         </div>
 
         {results.length > 0 && (
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-fadeIn">
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {results.map((result, index) => (
               <ResultCard key={index} result={result} />
             ))}
