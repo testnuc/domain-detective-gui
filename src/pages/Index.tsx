@@ -3,6 +3,7 @@ import SearchBox from "@/components/SearchBox";
 import ResultCard, { EmailResult } from "@/components/ResultCard";
 import { useToast } from "@/components/ui/use-toast";
 import { Flame } from "lucide-react";
+import CelebrationScreen from "@/components/CelebrationScreen";
 
 const mockSearch = async (domain: string): Promise<EmailResult[]> => {
   // Simulate API delay
@@ -75,17 +76,17 @@ const mockSearch = async (domain: string): Promise<EmailResult[]> => {
 const Index = () => {
   const [results, setResults] = useState<EmailResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [searchedDomain, setSearchedDomain] = useState("");
   const { toast } = useToast();
 
   const handleSearch = async (domain: string) => {
     setIsLoading(true);
     try {
       const data = await mockSearch(domain);
+      setSearchedDomain(domain);
       setResults(data);
-      toast({
-        title: "Success",
-        description: `Found ${data.length} email(s) for ${domain}`,
-      });
+      setShowCelebration(true);
     } catch (error) {
       toast({
         title: "Error",
@@ -95,6 +96,10 @@ const Index = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCelebrationComplete = () => {
+    setShowCelebration(false);
   };
 
   return (
@@ -113,7 +118,15 @@ const Index = () => {
           <SearchBox onSearch={handleSearch} isLoading={isLoading} />
         </div>
 
-        {results.length > 0 && (
+        {showCelebration && (
+          <CelebrationScreen
+            domain={searchedDomain}
+            resultsCount={results.length}
+            onComplete={handleCelebrationComplete}
+          />
+        )}
+
+        {!showCelebration && results.length > 0 && (
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {results.map((result, index) => (
               <ResultCard key={index} result={result} />
@@ -121,7 +134,7 @@ const Index = () => {
           </div>
         )}
 
-        {isLoading && (
+        {isLoading && !showCelebration && (
           <div className="text-center mt-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-white border-t-transparent"></div>
             <p className="text-lg text-white/90 mt-4">Searching for email addresses...</p>
