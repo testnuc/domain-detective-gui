@@ -5,7 +5,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Flame } from "lucide-react";
 import CelebrationScreen from "@/components/CelebrationScreen";
 import { FirecrawlService } from "@/utils/FirecrawlService";
-import ApiKeyInput from "@/components/ApiKeyInput";
 
 const Index = () => {
   const [results, setResults] = useState<EmailResult[]>([]);
@@ -15,15 +14,6 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleSearch = async (domain: string) => {
-    if (!FirecrawlService.getApiKey()) {
-      toast({
-        title: "API Key Required",
-        description: "Please enter your Firecrawl API key first",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
     try {
       const data = await FirecrawlService.crawlWebsite(`https://${domain}`);
@@ -65,8 +55,6 @@ const Index = () => {
             Find mails of Top Professionals
           </p>
         </div>
-
-        {!FirecrawlService.getApiKey() && <ApiKeyInput />}
 
         <div className="max-w-4xl mx-auto mb-16">
           <SearchBox onSearch={handleSearch} isLoading={isLoading} />
