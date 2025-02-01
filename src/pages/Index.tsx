@@ -98,21 +98,23 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 text-gray-900">
-            Email Finder
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
+            Email Hunter
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Find professional email addresses in seconds
+          <p className="text-xl text-gray-600 font-medium">
+            Find mails of Top Professionals
           </p>
         </div>
 
-        <SearchBox onSearch={handleSearch} isLoading={isLoading} />
+        <div className="max-w-4xl mx-auto mb-16">
+          <SearchBox onSearch={handleSearch} isLoading={isLoading} />
+        </div>
 
         {results.length > 0 && (
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-fadeIn">
             {results.map((result, index) => (
               <ResultCard key={index} result={result} />
             ))}
@@ -121,7 +123,8 @@ const Index = () => {
 
         {isLoading && (
           <div className="text-center mt-12">
-            <p className="text-lg text-gray-600">Searching for email addresses...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+            <p className="text-lg text-gray-600 mt-4">Searching for email addresses...</p>
           </div>
         )}
       </div>
