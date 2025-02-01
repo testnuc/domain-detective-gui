@@ -21,6 +21,54 @@ const mockSearch = async (domain: string): Promise<EmailResult[]> => {
       designation: "Marketing Director",
       company: domain,
     },
+    {
+      name: "Michael Brown",
+      email: `m.brown@${domain}`,
+      designation: "Sales Manager",
+      company: domain,
+    },
+    {
+      name: "Emily Davis",
+      email: `emily.davis@${domain}`,
+      designation: "HR Director",
+      company: domain,
+    },
+    {
+      name: "David Wilson",
+      email: `d.wilson@${domain}`,
+      designation: "Product Manager",
+      company: domain,
+    },
+    {
+      name: "Lisa Anderson",
+      email: `l.anderson@${domain}`,
+      designation: "Software Engineer",
+      company: domain,
+    },
+    {
+      name: "Robert Taylor",
+      email: `r.taylor@${domain}`,
+      designation: "Operations Manager",
+      company: domain,
+    },
+    {
+      name: "Jennifer Martinez",
+      email: `j.martinez@${domain}`,
+      designation: "Customer Success Manager",
+      company: domain,
+    },
+    {
+      name: "William Lee",
+      email: `w.lee@${domain}`,
+      designation: "Finance Director",
+      company: domain,
+    },
+    {
+      name: "Patricia Moore",
+      email: `p.moore@${domain}`,
+      designation: "Business Development Manager",
+      company: domain,
+    }
   ];
 };
 
