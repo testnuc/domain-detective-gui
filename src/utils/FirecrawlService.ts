@@ -1,4 +1,3 @@
-import FirecrawlApp from '@mendable/firecrawl-js';
 import { EmailResult } from '@/components/ResultCard';
 
 interface ErrorResponse {
@@ -19,74 +18,50 @@ interface CrawlStatusResponse {
 type CrawlResponse = CrawlStatusResponse | ErrorResponse;
 
 export class FirecrawlService {
-  private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
-  private static firecrawlApp: FirecrawlApp | null = null;
-
-  static saveApiKey(apiKey: string): void {
-    localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
-    this.firecrawlApp = new FirecrawlApp({ apiKey });
-    console.log('API key saved successfully');
-  }
-
-  static getApiKey(): string | null {
-    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
-  }
-
   static async crawlWebsite(url: string): Promise<EmailResult[]> {
-    const apiKey = this.getApiKey();
-    if (!apiKey) {
-      throw new Error('API key not found');
-    }
-
     try {
-      console.log('Making crawl request to Firecrawl API');
-      if (!this.firecrawlApp) {
-        this.firecrawlApp = new FirecrawlApp({ apiKey });
-      }
-
-      const crawlResponse = await this.firecrawlApp.crawlUrl(url, {
-        limit: 100,
-        scrapeOptions: {
-          formats: ['markdown', 'html']
-        }
-      }) as CrawlResponse;
-
-      if (!crawlResponse.success) {
-        throw new Error((crawlResponse as ErrorResponse).error);
-      }
-
-      // Process the crawled data to extract email information
-      const emailResults: EmailResult[] = [];
-      const emailPattern = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+      console.log('Making request to getprospect.com');
       
-      crawlResponse.data.forEach(item => {
-        const content = typeof item === 'string' ? item : JSON.stringify(item);
-        const emails = content.match(emailPattern) || [];
-        
-        emails.forEach(email => {
-          // Generate a name from email (basic example)
-          const namePart = email.split('@')[0].replace(/[._-]/g, ' ');
-          const name = namePart
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
+      // Make the HTTP request to getprospect.com
+      const response = await fetch(`https://getprospect.com/email-finder/email-finder-by-domain/${url}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+      });
 
-          emailResults.push({
-            name,
-            email,
-            designation: 'Found in Website Scan',
-            company: url
-          });
-        });
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from getprospect.com');
+      }
+
+      const text = await response.text();
+      
+      // Extract emails using regex pattern
+      const emailPattern = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+      const emails = text.match(emailPattern) || [];
+      
+      // Process and format the results
+      const emailResults: EmailResult[] = emails.map(email => {
+        // Generate a name from email (basic example)
+        const namePart = email.split('@')[0].replace(/[._-]/g, ' ');
+        const name = namePart
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+
+        return {
+          name,
+          email,
+          designation: 'Found in Website Scan',
+          company: url
+        };
       });
 
       return emailResults;
     } catch (error) {
-      console.error('Error during crawl:', error);
+      console.error('Error during fetch:', error);
       throw error;
     }
   }
 }
-
-// Initialize the API key when the file loads
-FirecrawlService.saveApiKey('fc-ff42af0cd6b149268c208dedcb69eab0');
