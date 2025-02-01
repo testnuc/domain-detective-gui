@@ -23,7 +23,6 @@ const SearchBox = ({ onSearch, isLoading }: SearchBoxProps) => {
       return;
     }
     
-    // Basic domain validation
     const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
     if (!domainRegex.test(domain)) {
       toast({
@@ -39,20 +38,20 @@ const SearchBox = ({ onSearch, isLoading }: SearchBoxProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
-      <div className="flex gap-3 p-2 bg-white rounded-lg shadow-lg">
+      <div className="glass rounded-xl p-2 flex gap-3">
         <div className="relative flex-1">
           <Input
             type="text"
             placeholder="Enter company domain (e.g., company.com)"
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
-            className="pl-4 pr-10 py-6 text-lg w-full border-0 focus-visible:ring-1 focus-visible:ring-primary"
+            className="pl-4 pr-10 py-6 text-lg w-full bg-white/5 border-white/10 text-white placeholder:text-white/70 focus-visible:ring-1 focus-visible:ring-white/30"
           />
         </div>
         <Button 
           type="submit" 
           disabled={isLoading}
-          className="bg-primary hover:bg-primary-hover text-white px-8 py-6 text-lg h-auto rounded-lg transition-all duration-200 hover:shadow-md disabled:bg-gray-300"
+          className="bg-white/20 hover:bg-white/30 text-white px-8 py-6 text-lg h-auto rounded-lg transition-all duration-200 backdrop-blur-sm disabled:bg-white/10 disabled:text-white/50"
         >
           {isLoading ? (
             <>

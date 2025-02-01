@@ -98,13 +98,13 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen py-16 px-4">
+      <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 text-white">
             Email Hunter
           </h1>
-          <p className="text-xl text-gray-600 font-medium">
+          <p className="text-xl text-white/90 font-medium">
             Find mails of Top Professionals
           </p>
         </div>
@@ -123,8 +123,8 @@ const Index = () => {
 
         {isLoading && (
           <div className="text-center mt-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-            <p className="text-lg text-gray-600 mt-4">Searching for email addresses...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-white border-t-transparent"></div>
+            <p className="text-lg text-white/90 mt-4">Searching for email addresses...</p>
           </div>
         )}
       </div>
