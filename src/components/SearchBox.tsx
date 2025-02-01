@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Command } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
@@ -40,14 +40,13 @@ const SearchBox = ({ onSearch, isLoading }: SearchBoxProps) => {
     <div className="search-container">
       <form onSubmit={handleSubmit} className="relative">
         <div className="glass rounded-full p-1.5 flex gap-2">
-          <div className="relative flex-1 flex items-center">
-            <Command className="absolute left-4 h-5 w-5 text-white/60" />
+          <div className="relative flex-1">
             <Input
               type="text"
               placeholder="Enter company domain (e.g., company.com)"
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
-              className="search-input pl-12"
+              className="search-input"
             />
           </div>
           <Button 
