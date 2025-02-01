@@ -4,74 +4,7 @@ import ResultCard, { EmailResult } from "@/components/ResultCard";
 import { useToast } from "@/components/ui/use-toast";
 import { Flame } from "lucide-react";
 import CelebrationScreen from "@/components/CelebrationScreen";
-
-const mockSearch = async (domain: string): Promise<EmailResult[]> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  return [
-    {
-      name: "John Smith",
-      email: `john.smith@${domain}`,
-      designation: "Chief Technology Officer",
-      company: domain,
-    },
-    {
-      name: "Sarah Johnson",
-      email: `sarah.j@${domain}`,
-      designation: "Marketing Director",
-      company: domain,
-    },
-    {
-      name: "Michael Brown",
-      email: `m.brown@${domain}`,
-      designation: "Sales Manager",
-      company: domain,
-    },
-    {
-      name: "Emily Davis",
-      email: `emily.davis@${domain}`,
-      designation: "HR Director",
-      company: domain,
-    },
-    {
-      name: "David Wilson",
-      email: `d.wilson@${domain}`,
-      designation: "Product Manager",
-      company: domain,
-    },
-    {
-      name: "Lisa Anderson",
-      email: `l.anderson@${domain}`,
-      designation: "Software Engineer",
-      company: domain,
-    },
-    {
-      name: "Robert Taylor",
-      email: `r.taylor@${domain}`,
-      designation: "Operations Manager",
-      company: domain,
-    },
-    {
-      name: "Jennifer Martinez",
-      email: `j.martinez@${domain}`,
-      designation: "Customer Success Manager",
-      company: domain,
-    },
-    {
-      name: "William Lee",
-      email: `w.lee@${domain}`,
-      designation: "Finance Director",
-      company: domain,
-    },
-    {
-      name: "Patricia Moore",
-      email: `p.moore@${domain}`,
-      designation: "Business Development Manager",
-      company: domain,
-    }
-  ];
-};
+import { FirecrawlService } from "@/utils/FirecrawlService";
 
 const Index = () => {
   const [results, setResults] = useState<EmailResult[]>([]);
@@ -83,14 +16,23 @@ const Index = () => {
   const handleSearch = async (domain: string) => {
     setIsLoading(true);
     try {
-      const data = await mockSearch(domain);
+      const data = await FirecrawlService.crawlWebsite(`https://${domain}`);
       setSearchedDomain(domain);
       setResults(data);
-      setShowCelebration(true);
+      
+      if (data.length > 0) {
+        setShowCelebration(true);
+      } else {
+        toast({
+          title: "No Results",
+          description: "No email addresses found for this domain",
+        });
+      }
     } catch (error) {
+      console.error('Search error:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch email addresses",
+        description: error instanceof Error ? error.message : "Failed to fetch email addresses",
         variant: "destructive",
       });
     } finally {
