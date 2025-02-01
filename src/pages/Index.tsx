@@ -102,7 +102,7 @@ const Index = () => {
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-4 text-white flex items-center justify-center gap-2" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif' }}>
-            Email Hunter
+            Email H<Flame className="text-fandom-accent w-8 h-8 inline-block" />nter
           </h1>
           <p className="text-xl text-white/90 font-medium">
             Find mails of Top Professionals
