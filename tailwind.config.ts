@@ -25,12 +25,12 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#9b87f5",
-          hover: "#7E69AB",
-          light: "#D6BCFA",
+          DEFAULT: "#ea384c",
+          hover: "#d32f41",
+          light: "#ff6b7d",
         },
         fandom: {
-          primary: "#EA1157",
+          primary: "#ea384c",
           secondary: "#2E0916",
           accent: "#FFD700",
         },
