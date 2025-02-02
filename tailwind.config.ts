@@ -25,9 +25,9 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#9b87f5",
-          hover: "#7E69AB",
-          light: "#D6BCFA",
+          DEFAULT: "#EA1157",
+          hover: "#C20D45",
+          light: "#FF4081",
         },
         fandom: {
           primary: "#EA1157",
