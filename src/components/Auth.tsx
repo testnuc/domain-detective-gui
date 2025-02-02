@@ -27,7 +27,7 @@ const AuthComponent = () => {
           },
         }}
         providers={['google']}
-        redirectTo="https://domain-detective-gui.lovable.app/"
+        redirectTo={window.location.origin}
         theme="dark"
       />
     </div>
