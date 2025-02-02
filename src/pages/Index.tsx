@@ -60,18 +60,18 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16 px-4">
+    <div className="min-h-screen py-16 px-4">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4 text-gray-900 flex items-center justify-center gap-2">
-            Email H<Flame className="text-fandom-primary w-8 h-8 inline-block" />nter
+          <h1 className="text-5xl font-bold mb-4 text-white flex items-center justify-center gap-2">
+            Email H<Flame className="text-fandom-accent w-8 h-8 inline-block" />nter
           </h1>
-          <p className="text-xl text-gray-600 font-medium mb-8">
+          <p className="text-xl text-white/90 font-medium mb-8">
             Find Professional Email Addresses Instantly
           </p>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            Enter any company website to find email addresses of professionals working there. 
-            Our AI-powered tool searches through various sources to find verified business emails.
+          <p className="text-white/70 max-w-2xl mx-auto">
+            Enter any company website to find email addresses and roles of professionals working there. 
+            Our AI-powered tool searches through various sources to find verified business contacts.
           </p>
         </div>
 
@@ -101,8 +101,8 @@ const Index = () => {
 
             {isLoading && !showCelebration && (
               <div className="text-center mt-12">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-fandom-primary border-t-transparent"></div>
-                <p className="text-lg text-gray-600 mt-4">Searching for email addresses...</p>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-white border-t-transparent"></div>
+                <p className="text-lg text-white/90 mt-4">Searching for employees...</p>
               </div>
             )}
           </>
