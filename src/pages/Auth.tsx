@@ -18,7 +18,7 @@ const Auth = () => {
           },
           redirectTo: window.location.hostname === 'localhost'
             ? `${window.location.origin}/`
-            : 'https://hunter.hackwithsingh.com/'
+            : 'https://wayback-up.vercel.app/'
         },
       });
 
