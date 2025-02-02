@@ -37,7 +37,6 @@ const Index = () => {
   };
 
   const storeDomainSearch = async (domain: string) => {
-    // Store in domain_searches table
     const { error: domainSearchError } = await supabase
       .from("domain_searches")
       .insert({ domain });
@@ -46,7 +45,6 @@ const Index = () => {
       console.error('Error storing domain search:', domainSearchError);
     }
 
-    // Store in user_scans table (already implemented)
     const { error: scanError } = await supabase
       .from("user_scans")
       .insert({ domain });
@@ -63,7 +61,6 @@ const Index = () => {
       await checkRateLimit(domain);
       await storeDomainSearch(domain);
 
-      // If successful, proceed with the search
       const data = await OutscraperService.findEmails(domain);
       setSearchedDomain(domain);
       setResults(data);
@@ -92,7 +89,6 @@ const Index = () => {
     setShowCelebration(false);
   };
 
-  // Update remaining scans when domain changes
   useEffect(() => {
     if (searchedDomain) {
       checkRateLimit(searchedDomain);
@@ -114,9 +110,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto mb-16">
           <SearchBox onSearch={handleSearch} isLoading={isLoading} />
           <div className="text-center mt-4 text-white/80">
-            {searchedDomain && (
-              <p>Remaining scans for {searchedDomain}: {remainingScans} out of 5 per day</p>
-            )}
+            <p>Total scans remaining: {remainingScans} out of 5 per day {searchedDomain && `for ${searchedDomain}`}</p>
           </div>
         </div>
 
