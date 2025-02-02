@@ -24,87 +24,29 @@ const AuthComponent = () => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
+      
+      if (_event === 'SIGNED_IN') {
+        toast({
+          title: "Success",
+          description: "Successfully signed in!",
+        });
+      } else if (_event === 'SIGNED_UP') {
+        toast({
+          title: "Success",
+          description: "Please check your email to verify your account.",
+        });
+      } else if (_event === 'SIGNED_OUT') {
+        toast({
+          title: "Success",
+          description: "Successfully signed out!",
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
-
-  const handleSignUp = async (email: string, password: string) => {
-    if (!isValidGmail(email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please use a valid Gmail address without dots or plus signs (e.g., user@gmail.com)",
-        variant: "destructive"
-      });
-      return null;
-    }
-
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-        }
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Please check your email to verify your account.",
-      });
-      return data;
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSignIn = async (email: string, password: string) => {
-    if (!isValidGmail(email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please use a valid Gmail address without dots or plus signs (e.g., user@gmail.com)",
-        variant: "destructive"
-      });
-      return null;
-    }
-
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Successfully signed in!",
-      });
-      return data;
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [toast]);
 
   if (isLoading) {
     return (
@@ -141,8 +83,6 @@ const AuthComponent = () => {
         }}
         providers={[]}
         redirectTo={window.location.origin}
-        onSignUp={({ email, password }) => handleSignUp(email, password)}
-        onSignIn={({ email, password }) => handleSignIn(email, password)}
         theme="dark"
       />
     </div>
