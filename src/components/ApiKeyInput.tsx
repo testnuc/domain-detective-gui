@@ -17,7 +17,7 @@ const ApiKeyInput = ({ onKeySet }: ApiKeyInputProps) => {
     if (!apiKey) {
       toast({
         title: "Error",
-        description: "Please enter your Outscraper API key",
+        description: "Please enter your Firecrawl API key",
         variant: "destructive",
       });
       return;
@@ -36,27 +36,16 @@ const ApiKeyInput = ({ onKeySet }: ApiKeyInputProps) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="apiKey" className="block text-sm font-medium text-white mb-2">
-            Outscraper API Key
+            Firecrawl API Key
           </label>
           <Input
             id="apiKey"
             type="password"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
-            placeholder="Enter your Outscraper API key"
+            placeholder="Enter your Firecrawl API key"
             className="w-full"
           />
-          <p className="text-sm text-gray-300 mt-2">
-            Get your API key from{" "}
-            <a
-              href="https://app.outscraper.com/profile"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300"
-            >
-              Outscraper Dashboard
-            </a>
-          </p>
         </div>
         <Button type="submit" className="w-full">
           Save API Key
