@@ -16,11 +16,7 @@ const Auth = () => {
             access_type: 'offline',
             prompt: 'consent',
           },
-          redirectTo: window.location.hostname === 'localhost' 
-            ? `${window.location.origin}/auth/callback`
-            : window.location.hostname.includes('hunter.hackwithsingh.com')
-              ? 'https://hunter.hackwithsingh.com/auth/callback'
-              : `${window.location.origin}/auth/callback`
+          redirectTo: `${window.location.origin}/auth/callback`
         },
       });
 
