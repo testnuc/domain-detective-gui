@@ -61,13 +61,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen py-16 px-4">
-      <div className="container mx-auto">
+      <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4 text-white flex items-center justify-center gap-2" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif' }}>
+          <h1 className="text-5xl font-bold mb-4 text-white flex items-center justify-center gap-2">
             Email H<Flame className="text-fandom-accent w-8 h-8 inline-block" />nter
           </h1>
           <p className="text-xl text-white/90 font-medium">
-            Find mails of Top Professionals
+            Find Professional Email Addresses Instantly
           </p>
         </div>
 
@@ -88,7 +88,7 @@ const Index = () => {
             )}
 
             {!showCelebration && results.length > 0 && (
-              <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-12 grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                 {results.map((result, index) => (
                   <ResultCard key={index} result={result} />
                 ))}
