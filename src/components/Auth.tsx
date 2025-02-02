@@ -11,60 +11,76 @@ const AuthComponent = () => {
   useEffect(() => {
     const createDemoUser = async () => {
       try {
-        console.log('Checking for existing demo user...');
-        const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+        // Initialize auth session
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
-        if (getUserError) {
-          console.error('Error checking user:', getUserError);
-          throw getUserError;
+        if (sessionError) {
+          console.error('Error initializing session:', sessionError);
+          throw sessionError;
         }
 
-        if (!user) {
-          console.log('No user found, attempting to create demo user...');
-          const { error: signUpError } = await supabase.auth.signUp({
-            email: 'demo@domain-detective.com',
-            password: '123456',
-            options: {
-              emailRedirectTo: window.location.origin,
-              data: {
-                is_demo: true
+        // If there's no session, try to get the user
+        if (!sessionData.session) {
+          console.log('No session found, checking for existing user...');
+          const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+          
+          if (getUserError) {
+            console.error('Error checking user:', getUserError);
+            throw getUserError;
+          }
+
+          if (!user) {
+            console.log('No user found, attempting to create demo user...');
+            const { error: signUpError } = await supabase.auth.signUp({
+              email: 'demo@domain-detective.com',
+              password: '123456',
+              options: {
+                emailRedirectTo: window.location.origin,
+                data: {
+                  is_demo: true
+                }
               }
+            });
+
+            if (signUpError) {
+              console.error('Error creating demo user:', signUpError);
+              toast({
+                title: "Error",
+                description: signUpError.message || "Could not create demo user. Please try again.",
+                variant: "destructive"
+              });
+              throw signUpError;
             }
-          });
 
-          if (signUpError) {
-            console.error('Error creating demo user:', signUpError);
-            toast({
-              title: "Error",
-              description: signUpError.message || "Could not create demo user. Please try again.",
-              variant: "destructive"
+            // Wait a bit before signing in to ensure the user is created
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            console.log('Demo user created, attempting to sign in...');
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+              email: 'demo@domain-detective.com',
+              password: '123456',
             });
-            throw signUpError;
-          }
 
-          console.log('Demo user created, attempting to sign in...');
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email: 'demo@domain-detective.com',
-            password: '123456',
-          });
+            if (signInError) {
+              console.error('Error signing in:', signInError);
+              toast({
+                title: "Error",
+                description: signInError.message || "Could not sign in. Please try again.",
+                variant: "destructive"
+              });
+              throw signInError;
+            }
 
-          if (signInError) {
-            console.error('Error signing in:', signInError);
+            console.log('Demo user signed in successfully');
             toast({
-              title: "Error",
-              description: signInError.message || "Could not sign in. Please try again.",
-              variant: "destructive"
+              title: "Success",
+              description: "Demo account created and signed in successfully.",
             });
-            throw signInError;
+          } else {
+            console.log('User already exists:', user.email);
           }
-
-          console.log('Demo user signed in successfully');
-          toast({
-            title: "Success",
-            description: "Demo account created and signed in successfully.",
-          });
         } else {
-          console.log('User already exists:', user.email);
+          console.log('Session already exists');
         }
       } catch (error) {
         console.error('Unexpected error:', error);
