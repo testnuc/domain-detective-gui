@@ -50,7 +50,21 @@ const AuthComponent = () => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Listen for auth errors
+    const authListener = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Invalid login credentials. Please try again.",
+        });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      authListener.data.subscription.unsubscribe();
+    };
   }, [toast]);
 
   if (isLoading) {
