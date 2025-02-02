@@ -36,14 +36,12 @@ export class OutscraperService {
       }
 
       const data: OutscraperResponse = await response.json();
-      
-      // Transform the response into our EmailResult format
       const results: EmailResult[] = [];
       
       data.data.forEach(item => {
         // Handle contacts with detailed information
         item.contacts?.forEach(contact => {
-          if (contact.email) {
+          if (contact.email && typeof contact.email === 'string') {
             results.push({
               name: contact.name || this.extractNameFromEmail(contact.email),
               email: contact.email,
@@ -55,8 +53,7 @@ export class OutscraperService {
 
         // Handle additional emails found
         item.emails?.forEach(email => {
-          // Only add emails that weren't already added from contacts
-          if (!results.some(r => r.email === email)) {
+          if (typeof email === 'string' && !results.some(r => r.email === email)) {
             results.push({
               name: this.extractNameFromEmail(email),
               email: email,
@@ -75,10 +72,23 @@ export class OutscraperService {
   }
 
   private static extractNameFromEmail(email: string): string {
-    const [localPart] = email.split('@');
-    return localPart
-      .split(/[._-]/)
-      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-      .join(' ');
+    try {
+      if (typeof email !== 'string') {
+        return 'Unknown User';
+      }
+      
+      const [localPart] = email.split('@');
+      if (!localPart) {
+        return 'Unknown User';
+      }
+
+      return localPart
+        .split(/[._-]/)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(' ');
+    } catch (error) {
+      console.error('Error extracting name from email:', error);
+      return 'Unknown User';
+    }
   }
 }
