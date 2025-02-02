@@ -43,7 +43,7 @@ const SearchBox = ({ onSearch, isLoading }: SearchBoxProps) => {
           <div className="relative flex-1">
             <Input
               type="text"
-              placeholder="Search"
+              placeholder="Enter domain (e.g., company.com)"
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               className="search-input h-10 text-sm"
