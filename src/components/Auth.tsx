@@ -27,7 +27,7 @@ const AuthComponent = () => {
           },
         }}
         providers={['google']}
-        redirectTo={window.location.origin}
+        redirectTo="https://htmawspfxydhacnuplma.supabase.co/auth/v1/callback"
         theme="dark"
       />
     </div>
