@@ -18,7 +18,7 @@ const Auth = () => {
           },
           redirectTo: window.location.hostname === 'localhost' 
             ? `${window.location.origin}/auth/callback`
-            : window.location.hostname.includes('hackwithsingh.com')
+            : window.location.hostname.includes('hunter.hackwithsingh.com')
               ? 'https://hunter.hackwithsingh.com/auth/callback'
               : `${window.location.origin}/auth/callback`
         },
@@ -86,10 +86,6 @@ const Auth = () => {
           <p className="text-sm text-white/50">
             By signing in, you agree to our Terms of Service and Privacy Policy
           </p>
-        </div>
-
-        <div className="absolute bottom-4 left-4 right-4 text-center md:text-left text-white/30 text-sm">
-          <p>Find valuable bounties from unresponsive targets and claim your rewards</p>
         </div>
       </div>
     </div>
