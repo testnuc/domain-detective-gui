@@ -17,23 +17,32 @@ const Index = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
+  const checkRateLimit = async (domain: string) => {
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    const { count } = await supabase
+      .from("user_scans")
+      .select("*", { count: 'exact' })
+      .gte('created_at', twentyFourHoursAgo.toISOString())
+      .eq('domain', domain);
+
+    if (count && count >= 5) {
+      throw new Error("You have reached your daily scan limit of 5 scans for this domain.");
+    }
   };
 
   const handleSearch = async (domain: string) => {
     setIsLoading(true);
     try {
-      // First, try to insert into user_scans to check the limit
+      await checkRateLimit(domain);
+
+      // Insert the scan record first
       const { error: scanError } = await supabase
         .from("user_scans")
         .insert({ domain });
 
       if (scanError) {
-        if (scanError.message.includes("daily limit")) {
-          throw new Error("You have reached your daily scan limit of 5 scans.");
-        }
         throw scanError;
       }
 
@@ -69,12 +78,6 @@ const Index = () => {
   return (
     <div className="min-h-screen py-16 px-4">
       <div className="container mx-auto max-w-7xl">
-        <div className="flex justify-end mb-4">
-          <Button variant="outline" onClick={handleLogout}>
-            Logout
-          </Button>
-        </div>
-
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-4 text-white flex items-center justify-center gap-2">
             Email H<Flame className="text-fandom-accent w-8 h-8 inline-block" />nter
