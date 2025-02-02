@@ -16,6 +16,11 @@ const Auth = () => {
             access_type: 'offline',
             prompt: 'consent',
           },
+          redirectTo: window.location.hostname === 'localhost' 
+            ? `${window.location.origin}/auth/callback`
+            : window.location.hostname.includes('hackwithsingh.com')
+              ? 'https://hunter.hackwithsingh.com/auth/callback'
+              : `https://bneuiubsauqherqrvepu.supabase.co/auth/v1/callback`
         },
       });
 
