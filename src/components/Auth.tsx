@@ -5,82 +5,105 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 const isValidGmail = (email: string) => {
-  // Basic Gmail validation
-  const gmailRegex = /^[a-zA-Z0-9]+@gmail\.com$/;
-  return gmailRegex.test(email);
+  // Strict Gmail validation - no dots or plus signs allowed
+  const strictGmailRegex = /^[a-zA-Z0-9]+@gmail\.com$/;
+  return strictGmailRegex.test(email);
 };
 
 const AuthComponent = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    // Initialize session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSignUp = async (email: string, password: string) => {
     if (!isValidGmail(email)) {
       toast({
         title: "Invalid Email",
-        description: "Please use a valid Gmail address (e.g., user@gmail.com)",
+        description: "Please use a valid Gmail address without dots or plus signs (e.g., user@gmail.com)",
         variant: "destructive"
       });
       return null;
     }
 
     setIsLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: window.location.origin,
-      }
-    });
-    setIsLoading(false);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: window.location.origin,
+        }
+      });
 
-    if (error) {
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Please check your email to verify your account.",
+      });
+      return data;
+    } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive"
       });
       return null;
+    } finally {
+      setIsLoading(false);
     }
-
-    toast({
-      title: "Success",
-      description: "Please check your email to verify your account.",
-    });
-    return data;
   };
 
   const handleSignIn = async (email: string, password: string) => {
     if (!isValidGmail(email)) {
       toast({
         title: "Invalid Email",
-        description: "Please use a valid Gmail address (e.g., user@gmail.com)",
+        description: "Please use a valid Gmail address without dots or plus signs (e.g., user@gmail.com)",
         variant: "destructive"
       });
       return null;
     }
 
     setIsLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-    setIsLoading(false);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if (error) {
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Successfully signed in!",
+      });
+      return data;
+    } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive"
       });
       return null;
+    } finally {
+      setIsLoading(false);
     }
-
-    toast({
-      title: "Success",
-      description: "Successfully signed in!",
-    });
-    return data;
   };
 
   if (isLoading) {
