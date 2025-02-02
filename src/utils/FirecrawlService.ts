@@ -45,12 +45,12 @@ export class FirecrawlService {
 
       // Google search simulation with CORS proxy
       try {
-        const googleUrl = `${this.CORS_PROXY}${encodeURIComponent(`https://www.google.com/search?q=intext:@${domain}&num=100`)}`;
+        const googleSearchUrl = `https://www.google.com/search?q=intext:@${domain}&num=100`;
+        const googleUrl = `${this.CORS_PROXY}${encodeURIComponent(googleSearchUrl)}`;
         const googleResponse = await fetch(googleUrl, {
           headers: {
             'User-Agent': this.USER_AGENT
-          },
-          mode: 'cors'
+          }
         });
         
         if (!googleResponse.ok) {
@@ -66,12 +66,12 @@ export class FirecrawlService {
 
       // Bing search simulation with CORS proxy
       try {
-        const bingUrl = `${this.CORS_PROXY}${encodeURIComponent(`https://www.bing.com/search?q=inbody:@${domain}&count=50`)}`;
+        const bingSearchUrl = `https://www.bing.com/search?q=inbody:@${domain}&count=50`;
+        const bingUrl = `${this.CORS_PROXY}${encodeURIComponent(bingSearchUrl)}`;
         const bingResponse = await fetch(bingUrl, {
           headers: {
             'User-Agent': this.USER_AGENT
-          },
-          mode: 'cors'
+          }
         });
         
         if (!bingResponse.ok) {
@@ -120,8 +120,9 @@ export class FirecrawlService {
     }
 
     try {
-      // Extract domain from URL
-      const domain = new URL(url).hostname.replace('www.', '');
+      // Ensure URL is properly formatted
+      const urlObj = new URL(url);
+      const domain = urlObj.hostname.replace('www.', '');
       
       // Search for emails using multiple methods with CORS proxy
       const searchResults = await this.searchEmails(domain);
