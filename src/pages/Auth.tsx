@@ -30,7 +30,7 @@ const Auth = () => {
             access_type: 'offline',
             prompt: 'consent',
           },
-          redirectTo: 'https://lovable.dev/projects/76987ce9-2134-4b1a-9bcc-90863e2de5ef/'
+          redirectTo: 'https://domain-detective-gui.lovable.app/auth'
         },
       });
 
