@@ -16,13 +16,17 @@ const AuthComponent = () => {
         
         if (getUserError) {
           console.error('Error checking user:', getUserError);
+          throw getUserError;
         }
 
         if (!user) {
           console.log('No user found, creating demo user...');
-          const { error } = await supabase.auth.signUp({
-            email: 'demo@example.com',
+          const { data, error } = await supabase.auth.signUp({
+            email: 'demo@domain-detective.com',
             password: '123456',
+            options: {
+              emailRedirectTo: window.location.origin
+            }
           });
 
           if (error) {
@@ -32,8 +36,9 @@ const AuthComponent = () => {
               description: error.message || "Could not create demo user. Please try again.",
               variant: "destructive"
             });
+            throw error;
           } else {
-            console.log('Demo user created successfully');
+            console.log('Demo user created successfully:', data);
             toast({
               title: "Success",
               description: "Demo user created successfully. You can now log in.",
@@ -46,7 +51,7 @@ const AuthComponent = () => {
         console.error('Unexpected error:', error);
         toast({
           title: "Error",
-          description: "An unexpected error occurred.",
+          description: "An unexpected error occurred while setting up the demo account.",
           variant: "destructive"
         });
       } finally {
