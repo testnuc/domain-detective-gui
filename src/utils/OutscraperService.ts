@@ -5,14 +5,21 @@ interface EmailResult {
   company: string;
 }
 
+interface EmailData {
+  value: string;
+  full_name?: string;
+  title?: string;
+  sources?: Array<{
+    ref: string;
+    extracted_on: string;
+    updated_on: string;
+  }>;
+}
+
 interface OutscraperResponse {
   data: Array<{
-    emails: string[];
-    contacts: Array<{
-      name?: string;
-      position?: string;
-      email?: string;
-    }>;
+    query: string;
+    emails: EmailData[];
   }>;
 }
 
@@ -39,25 +46,12 @@ export class OutscraperService {
       const results: EmailResult[] = [];
       
       data.data.forEach(item => {
-        // Handle contacts with detailed information
-        item.contacts?.forEach(contact => {
-          if (contact.email && typeof contact.email === 'string') {
+        item.emails?.forEach(emailData => {
+          if (emailData.value && typeof emailData.value === 'string') {
             results.push({
-              name: contact.name || this.extractNameFromEmail(contact.email),
-              email: contact.email,
-              designation: contact.position || 'Employee',
-              company: domain
-            });
-          }
-        });
-
-        // Handle additional emails found
-        item.emails?.forEach(email => {
-          if (typeof email === 'string' && !results.some(r => r.email === email)) {
-            results.push({
-              name: this.extractNameFromEmail(email),
-              email: email,
-              designation: 'Employee',
+              name: emailData.full_name || this.extractNameFromEmail(emailData.value),
+              email: emailData.value,
+              designation: emailData.title || 'Employee',
               company: domain
             });
           }
