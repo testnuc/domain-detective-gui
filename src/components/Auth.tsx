@@ -14,7 +14,7 @@ const AuthComponent = () => {
         
         if (!user) {
           const { error } = await supabase.auth.signUp({
-            email: 'demo@mail.com',
+            email: 'demo@example.com',
             password: '123456',
           });
 
@@ -22,7 +22,7 @@ const AuthComponent = () => {
             console.error('Error creating demo user:', error);
             toast({
               title: "Error",
-              description: "Could not create demo user. Please try again.",
+              description: error.message || "Could not create demo user. Please try again.",
               variant: "destructive"
             });
           } else {
