@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBox from "@/components/SearchBox";
 import ResultCard, { EmailResult } from "@/components/ResultCard";
@@ -14,6 +14,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [searchedDomain, setSearchedDomain] = useState("");
+  const [remainingScans, setRemainingScans] = useState(5);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -30,6 +31,9 @@ const Index = () => {
     if (count && count >= 5) {
       throw new Error("You have reached your daily scan limit of 5 scans for this domain.");
     }
+    
+    setRemainingScans(5 - (count || 0));
+    return count;
   };
 
   const storeDomainSearch = async (domain: string) => {
@@ -88,6 +92,13 @@ const Index = () => {
     setShowCelebration(false);
   };
 
+  // Update remaining scans when domain changes
+  useEffect(() => {
+    if (searchedDomain) {
+      checkRateLimit(searchedDomain);
+    }
+  }, [searchedDomain]);
+
   return (
     <div className="min-h-screen py-16 px-4">
       <div className="container mx-auto max-w-7xl">
@@ -102,6 +113,11 @@ const Index = () => {
 
         <div className="max-w-4xl mx-auto mb-16">
           <SearchBox onSearch={handleSearch} isLoading={isLoading} />
+          <div className="text-center mt-4 text-white/80">
+            {searchedDomain && (
+              <p>Remaining scans for {searchedDomain}: {remainingScans} out of 5 per day</p>
+            )}
+          </div>
         </div>
 
         {showCelebration && (
