@@ -41,14 +41,9 @@ const Auth = () => {
       <div className="w-full max-w-md space-y-8 glass-dark rounded-2xl p-8 border border-white/10">
         <div className="text-center space-y-6">
           <h1 className="text-4xl font-bold text-white">Email Hunter</h1>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Bounty Hunter Platform
-            </h2>
-            <p className="text-white/70">
-              Find and claim bounties from unresponsive targets
-            </p>
-          </div>
+          <p className="text-white/70">
+            Find and claim bounties from unresponsive targets
+          </p>
         </div>
 
         <div className="space-y-6">
