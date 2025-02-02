@@ -76,8 +76,7 @@ export class FirecrawlService {
       const response = await this.firecrawlApp.crawlUrl(url, {
         limit: 10,
         scrapeOptions: {
-          formats: ['content'],
-          selectors: ['body']
+          formats: ['html']
         }
       });
 
@@ -88,8 +87,8 @@ export class FirecrawlService {
       // Extract emails from the crawled content
       const emails = new Set<string>();
       response.data.forEach((page: any) => {
-        if (page.content) {
-          const foundEmails = this.extractEmailsFromText(page.content, domain);
+        if (page.html) {
+          const foundEmails = this.extractEmailsFromText(page.html, domain);
           foundEmails.forEach(email => emails.add(email));
         }
       });
