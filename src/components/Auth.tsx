@@ -21,28 +21,49 @@ const AuthComponent = () => {
 
         if (!user) {
           console.log('No user found, creating demo user...');
-          const { data, error } = await supabase.auth.signUp({
+          const { data, error } = await supabase.auth.signInWithPassword({
             email: 'demo@domain-detective.com',
             password: '123456',
-            options: {
-              emailRedirectTo: window.location.origin
-            }
           });
 
-          if (error) {
-            console.error('Error creating demo user:', error);
+          if (error?.message?.includes('Invalid login credentials')) {
+            console.log('User does not exist, creating new demo user...');
+            const { error: signUpError } = await supabase.auth.signUp({
+              email: 'demo@domain-detective.com',
+              password: '123456',
+              options: {
+                emailRedirectTo: window.location.origin,
+                data: {
+                  is_demo: true
+                }
+              }
+            });
+
+            if (signUpError) {
+              console.error('Error creating demo user:', signUpError);
+              toast({
+                title: "Error",
+                description: signUpError.message || "Could not create demo user. Please try again.",
+                variant: "destructive"
+              });
+              throw signUpError;
+            } else {
+              console.log('Demo user created successfully');
+              toast({
+                title: "Success",
+                description: "Demo user created successfully. You can now log in.",
+              });
+            }
+          } else if (error) {
+            console.error('Error signing in:', error);
             toast({
               title: "Error",
-              description: error.message || "Could not create demo user. Please try again.",
+              description: error.message || "Could not sign in. Please try again.",
               variant: "destructive"
             });
             throw error;
           } else {
-            console.log('Demo user created successfully:', data);
-            toast({
-              title: "Success",
-              description: "Demo user created successfully. You can now log in.",
-            });
+            console.log('Demo user signed in successfully:', data);
           }
         } else {
           console.log('User already exists:', user.email);
