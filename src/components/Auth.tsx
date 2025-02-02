@@ -1,18 +1,25 @@
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 const AuthComponent = () => {
   const { toast } = useToast();
+  const [isCreatingDemoUser, setIsCreatingDemoUser] = useState(true);
 
   useEffect(() => {
     const createDemoUser = async () => {
       try {
+        console.log('Checking for existing demo user...');
         const { data: { user }, error: getUserError } = await supabase.auth.getUser();
         
+        if (getUserError) {
+          console.error('Error checking user:', getUserError);
+        }
+
         if (!user) {
+          console.log('No user found, creating demo user...');
           const { error } = await supabase.auth.signUp({
             email: 'demo@example.com',
             password: '123456',
@@ -26,24 +33,39 @@ const AuthComponent = () => {
               variant: "destructive"
             });
           } else {
+            console.log('Demo user created successfully');
             toast({
               title: "Success",
               description: "Demo user created successfully. You can now log in.",
             });
           }
+        } else {
+          console.log('User already exists:', user.email);
         }
       } catch (error) {
-        console.error('Error checking/creating demo user:', error);
+        console.error('Unexpected error:', error);
         toast({
           title: "Error",
           description: "An unexpected error occurred.",
           variant: "destructive"
         });
+      } finally {
+        setIsCreatingDemoUser(false);
       }
     };
 
     createDemoUser();
   }, [toast]);
+
+  if (isCreatingDemoUser) {
+    return (
+      <div className="max-w-md mx-auto mt-16 p-6 glass-dark rounded-lg shadow-xl">
+        <div className="text-center text-white">
+          Setting up demo account...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto mt-16 p-6 glass-dark rounded-lg shadow-xl">
