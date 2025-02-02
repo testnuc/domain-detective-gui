@@ -10,13 +10,9 @@ const AuthComponent = () => {
   useEffect(() => {
     const createDemoUser = async () => {
       try {
-        const { data: existingUser } = await supabase
-          .from('auth.users')
-          .select('*')
-          .eq('email', 'demo@mail.com')
-          .single();
-
-        if (!existingUser) {
+        const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+        
+        if (!user) {
           const { error } = await supabase.auth.signUp({
             email: 'demo@mail.com',
             password: '123456',
@@ -24,15 +20,30 @@ const AuthComponent = () => {
 
           if (error) {
             console.error('Error creating demo user:', error);
+            toast({
+              title: "Error",
+              description: "Could not create demo user. Please try again.",
+              variant: "destructive"
+            });
+          } else {
+            toast({
+              title: "Success",
+              description: "Demo user created successfully. You can now log in.",
+            });
           }
         }
       } catch (error) {
         console.error('Error checking/creating demo user:', error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred.",
+          variant: "destructive"
+        });
       }
     };
 
     createDemoUser();
-  }, []);
+  }, [toast]);
 
   return (
     <div className="max-w-md mx-auto mt-16 p-6 glass-dark rounded-lg shadow-xl">
