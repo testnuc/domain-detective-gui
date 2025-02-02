@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SearchBox from "@/components/SearchBox";
 import ResultCard, { EmailResult } from "@/components/ResultCard";
 import { useToast } from "@/components/ui/use-toast";
 import { Flame } from "lucide-react";
 import CelebrationScreen from "@/components/CelebrationScreen";
 import { OutscraperService } from "@/utils/OutscraperService";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [results, setResults] = useState<EmailResult[]>([]);
@@ -12,10 +15,29 @@ const Index = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [searchedDomain, setSearchedDomain] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
 
   const handleSearch = async (domain: string) => {
     setIsLoading(true);
     try {
+      // First, try to insert into user_scans to check the limit
+      const { error: scanError } = await supabase
+        .from("user_scans")
+        .insert({ domain });
+
+      if (scanError) {
+        if (scanError.message.includes("daily limit")) {
+          throw new Error("You have reached your daily scan limit of 5 scans.");
+        }
+        throw scanError;
+      }
+
+      // If successful, proceed with the search
       const data = await OutscraperService.findEmails(domain);
       setSearchedDomain(domain);
       setResults(data);
@@ -47,6 +69,12 @@ const Index = () => {
   return (
     <div className="min-h-screen py-16 px-4">
       <div className="container mx-auto max-w-7xl">
+        <div className="flex justify-end mb-4">
+          <Button variant="outline" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
+
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-4 text-white flex items-center justify-center gap-2">
             Email H<Flame className="text-fandom-accent w-8 h-8 inline-block" />nter
