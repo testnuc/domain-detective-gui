@@ -76,7 +76,7 @@ export class FirecrawlService {
       const response = await this.firecrawlApp.crawlUrl(url, {
         limit: 10,
         scrapeOptions: {
-          formats: ['text'],
+          formats: ['content'],
           selectors: ['body']
         }
       });
