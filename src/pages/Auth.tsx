@@ -26,7 +26,6 @@ const Auth = () => {
 
       if (error) throw error;
 
-      // The redirect will happen automatically
     } catch (error) {
       console.error("Auth error:", error);
       toast({
@@ -38,20 +37,35 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-white">Welcome</h2>
-          <p className="mt-2 text-sm text-white/70">
-            Sign in with Google to continue
-          </p>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
+      <div className="w-full max-w-md space-y-8 glass-dark rounded-2xl p-8 border border-white/10">
+        <div className="text-center space-y-6">
+          <h1 className="text-4xl font-bold text-white">Email Hunter</h1>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Bounty Hunter Platform
+            </h2>
+            <p className="text-white/70">
+              Find and claim bounties from unresponsive targets
+            </p>
+          </div>
         </div>
-        <div className="mt-8">
+
+        <div className="space-y-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-black/30 text-white/60">Continue with</span>
+            </div>
+          </div>
+
           <Button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition-all duration-300 py-6 text-lg font-medium"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -69,8 +83,18 @@ const Auth = () => {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Continue with Google
+            Sign in with Google
           </Button>
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-sm text-white/50">
+            By signing in, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </div>
+
+        <div className="absolute bottom-4 left-4 right-4 text-center md:text-left text-white/30 text-sm">
+          <p>Find valuable bounties from unresponsive targets and claim your rewards</p>
         </div>
       </div>
     </div>
