@@ -47,14 +47,38 @@ export class FirecrawlService {
     if (lowerEmail.includes('hr')) return 'HR Manager';
     if (lowerEmail.includes('sales')) return 'Sales Manager';
     if (lowerEmail.includes('marketing')) return 'Marketing Manager';
-    if (lowerEmail.includes('support')) return 'Support Representative';
     if (lowerEmail.includes('dev') || lowerEmail.includes('engineer')) return 'Software Engineer';
     return 'Employee';
   }
 
+  private static isEmployeeEmail(email: string): boolean {
+    const lowerEmail = email.toLowerCase();
+    // Filter out common non-employee email patterns
+    const excludePatterns = [
+      'support',
+      'info',
+      'contact',
+      'hello',
+      'admin',
+      'help',
+      'service',
+      'noreply',
+      'no-reply',
+      'feedback',
+      'careers',
+      'jobs',
+      'press',
+      'media'
+    ];
+    
+    return !excludePatterns.some(pattern => lowerEmail.includes(pattern));
+  }
+
   private static extractEmailsFromText(text: string, domain: string): string[] {
     const emailRegex = new RegExp(`[a-zA-Z0-9._%+-]+@${domain.replace('.', '\\.')}`, 'g');
-    return [...new Set(text.match(emailRegex) || [])];
+    const allEmails = [...new Set(text.match(emailRegex) || [])];
+    // Filter to only include employee emails
+    return allEmails.filter(email => this.isEmployeeEmail(email));
   }
 
   static async crawlWebsite(url: string): Promise<EmailResult[]> {
