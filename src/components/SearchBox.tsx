@@ -39,30 +39,30 @@ const SearchBox = ({ onSearch, isLoading }: SearchBoxProps) => {
   return (
     <div className="search-container">
       <form onSubmit={handleSubmit} className="relative">
-        <div className="glass rounded-full p-1 flex gap-2 max-w-[600px] mx-auto">
+        <div className="glass rounded-full p-1 flex gap-2 max-w-[600px] mx-auto bg-white shadow-lg">
           <div className="relative flex-1">
             <Input
               type="text"
               placeholder="Enter company domain (e.g., company.com)"
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
-              className="search-input h-12 text-base"
+              className="search-input h-12 text-base border-none focus:ring-0"
             />
           </div>
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="bg-fandom-accent hover:bg-fandom-accent/90 text-fandom-secondary px-6 py-2 h-10 rounded-full transition-all duration-200 disabled:bg-white/5 disabled:text-white/40 font-semibold text-sm"
+            className="bg-fandom-primary hover:bg-fandom-primary/90 text-white px-6 py-2 h-10 rounded-full transition-all duration-200 disabled:bg-gray-200 disabled:text-gray-400 font-semibold text-sm"
           >
             {isLoading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-fandom-secondary border-t-transparent mr-2"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
                 Searching...
               </>
             ) : (
               <>
                 <Search className="h-4 w-4 mr-2" />
-                Find Employees
+                Find Email Addresses
               </>
             )}
           </Button>
