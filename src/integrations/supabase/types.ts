@@ -141,6 +141,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_scans: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          scan_date: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          scan_date?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          scan_date?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -20,7 +20,7 @@ const Auth = () => {
             ? `${window.location.origin}/auth/callback`
             : window.location.hostname.includes('hackwithsingh.com')
               ? 'https://hunter.hackwithsingh.com/auth/callback'
-              : `https://bneuiubsauqherqrvepu.supabase.co/auth/v1/callback`
+              : `${window.location.origin}/auth/callback`
         },
       });
 
