@@ -27,6 +27,7 @@ export class FirecrawlService {
   private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
   private static firecrawlApp: FirecrawlApp | null = null;
   private static USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+  private static CORS_PROXY = 'https://api.allorigins.win/raw?url=';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -38,17 +39,24 @@ export class FirecrawlService {
   }
 
   private static async searchEmails(domain: string): Promise<SearchEngineResponse[]> {
-    // Using a proxy service or backend API endpoint would be better for production
-    const proxyUrl = 'https://api.allorigins.win/raw?url=';
-    
     try {
       const results: SearchEngineResponse[] = [];
       const emailRegex = new RegExp(`[a-zA-Z0-9._%+-]+@${domain.replace('.', '\\.')}`, 'g');
 
-      // Google search simulation
+      // Google search simulation with CORS proxy
       try {
-        const googleUrl = encodeURIComponent(`https://www.google.com/search?q=intext:@${domain}&num=100`);
-        const googleResponse = await fetch(`${proxyUrl}${googleUrl}`);
+        const googleUrl = `${this.CORS_PROXY}${encodeURIComponent(`https://www.google.com/search?q=intext:@${domain}&num=100`)}`;
+        const googleResponse = await fetch(googleUrl, {
+          headers: {
+            'User-Agent': this.USER_AGENT
+          },
+          mode: 'cors'
+        });
+        
+        if (!googleResponse.ok) {
+          throw new Error(`HTTP error! status: ${googleResponse.status}`);
+        }
+        
         const googleText = await googleResponse.text();
         const googleEmails = [...new Set(googleText.match(emailRegex) || [])];
         results.push({ emails: googleEmails, source: 'Google' });
@@ -56,10 +64,20 @@ export class FirecrawlService {
         console.error('Google search error:', error);
       }
 
-      // Bing search simulation
+      // Bing search simulation with CORS proxy
       try {
-        const bingUrl = encodeURIComponent(`https://www.bing.com/search?q=inbody:@${domain}&count=50`);
-        const bingResponse = await fetch(`${proxyUrl}${bingUrl}`);
+        const bingUrl = `${this.CORS_PROXY}${encodeURIComponent(`https://www.bing.com/search?q=inbody:@${domain}&count=50`)}`;
+        const bingResponse = await fetch(bingUrl, {
+          headers: {
+            'User-Agent': this.USER_AGENT
+          },
+          mode: 'cors'
+        });
+        
+        if (!bingResponse.ok) {
+          throw new Error(`HTTP error! status: ${bingResponse.status}`);
+        }
+        
         const bingText = await bingResponse.text();
         const bingEmails = [...new Set(bingText.match(emailRegex) || [])];
         results.push({ emails: bingEmails, source: 'Bing' });
@@ -105,7 +123,7 @@ export class FirecrawlService {
       // Extract domain from URL
       const domain = new URL(url).hostname.replace('www.', '');
       
-      // Search for emails using multiple methods
+      // Search for emails using multiple methods with CORS proxy
       const searchResults = await this.searchEmails(domain);
       
       // Combine all found emails
