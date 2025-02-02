@@ -7,6 +7,11 @@ const Login = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white">Domain Detective</h1>
           <p className="text-white/80 mt-2">Sign in to continue</p>
+          <div className="mt-4 p-4 bg-white/10 rounded-lg inline-block">
+            <p className="text-white/90 text-sm">Demo Credentials:</p>
+            <p className="text-white/90 text-sm font-mono mt-1">Email: demo@mail.com</p>
+            <p className="text-white/90 text-sm font-mono">Password: 123456</p>
+          </div>
         </div>
         <AuthComponent />
       </div>
