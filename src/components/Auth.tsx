@@ -3,6 +3,7 @@ import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 const isValidGmail = (email: string) => {
   // Strict Gmail validation - no dots or plus signs allowed
@@ -13,7 +14,7 @@ const isValidGmail = (email: string) => {
 const AuthComponent = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     // Initialize session
@@ -24,24 +25,28 @@ const AuthComponent = () => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       setSession(session);
       
-      if (_event === 'SIGNED_IN') {
-        toast({
-          title: "Success",
-          description: "Successfully signed in!",
-        });
-      } else if (_event === 'SIGNED_UP') {
-        toast({
-          title: "Success",
-          description: "Please check your email to verify your account.",
-        });
-      } else if (_event === 'SIGNED_OUT') {
-        toast({
-          title: "Success",
-          description: "Successfully signed out!",
-        });
+      switch (event) {
+        case 'SIGNED_IN':
+          toast({
+            title: "Success",
+            description: "Successfully signed in!",
+          });
+          break;
+        case 'USER_UPDATED':
+          toast({
+            title: "Success",
+            description: "Please check your email to verify your account.",
+          });
+          break;
+        case 'SIGNED_OUT':
+          toast({
+            title: "Success",
+            description: "Successfully signed out!",
+          });
+          break;
       }
     });
 
