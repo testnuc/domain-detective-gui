@@ -1,4 +1,3 @@
-import FirecrawlApp from '@mendable/firecrawl-js';
 import { EmailResult } from '@/components/ResultCard';
 
 interface ErrorResponse {
@@ -19,12 +18,10 @@ interface CrawlStatusResponse {
 type CrawlResponse = CrawlStatusResponse | ErrorResponse;
 
 export class FirecrawlService {
-  private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
-  private static firecrawlApp: FirecrawlApp | null = null;
+  private static API_KEY_STORAGE_KEY = 'outscraper_api_key';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
-    this.firecrawlApp = new FirecrawlApp({ apiKey });
   }
 
   static getApiKey(): string | null {
@@ -51,36 +48,6 @@ export class FirecrawlService {
     return 'Employee';
   }
 
-  private static isEmployeeEmail(email: string): boolean {
-    const lowerEmail = email.toLowerCase();
-    // Filter out common non-employee email patterns
-    const excludePatterns = [
-      'support',
-      'info',
-      'contact',
-      'hello',
-      'admin',
-      'help',
-      'service',
-      'noreply',
-      'no-reply',
-      'feedback',
-      'careers',
-      'jobs',
-      'press',
-      'media'
-    ];
-    
-    return !excludePatterns.some(pattern => lowerEmail.includes(pattern));
-  }
-
-  private static extractEmailsFromText(text: string, domain: string): string[] {
-    const emailRegex = new RegExp(`[a-zA-Z0-9._%+-]+@${domain.replace('.', '\\.')}`, 'g');
-    const allEmails = [...new Set(text.match(emailRegex) || [])];
-    // Filter to only include employee emails
-    return allEmails.filter(email => this.isEmployeeEmail(email));
-  }
-
   static async crawlWebsite(url: string): Promise<EmailResult[]> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
@@ -88,42 +55,34 @@ export class FirecrawlService {
     }
 
     try {
-      // Ensure URL is properly formatted
-      const urlObj = new URL(url);
-      const domain = urlObj.hostname.replace('www.', '');
+      const domain = new URL(url).hostname.replace('www.', '');
       
-      if (!this.firecrawlApp) {
-        this.firecrawlApp = new FirecrawlApp({ apiKey });
-      }
-
-      // Use Firecrawl to get the website content
-      const response = await this.firecrawlApp.crawlUrl(url, {
-        limit: 10,
-        scrapeOptions: {
-          formats: ['html']
-        }
+      const response = await fetch(`https://api.app.outscraper.com/emails-and-contacts?query=${domain}&async=false`, {
+        method: 'GET',
+        headers: {
+          'X-API-KEY': apiKey,
+        },
       });
 
-      if (!response.success) {
-        throw new Error('Failed to crawl website');
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from Outscraper API');
       }
 
-      // Extract emails from the crawled content
-      const emails = new Set<string>();
-      response.data.forEach((page: any) => {
-        if (page.html) {
-          const foundEmails = this.extractEmailsFromText(page.html, domain);
-          foundEmails.forEach(email => emails.add(email));
-        }
-      });
-
-      // Transform emails into EmailResult format
-      const results: EmailResult[] = Array.from(emails).map(email => ({
-        name: this.extractNameFromEmail(email),
-        email,
-        designation: this.guessDesignation(email),
-        company: domain
-      }));
+      const data = await response.json();
+      
+      // Transform the response into our EmailResult format
+      const results: EmailResult[] = [];
+      
+      if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0].emails)) {
+        data[0].emails.forEach((email: string) => {
+          results.push({
+            name: this.extractNameFromEmail(email),
+            email,
+            designation: this.guessDesignation(email),
+            company: domain
+          });
+        });
+      }
 
       console.log(`Found ${results.length} unique emails`);
       return results;
