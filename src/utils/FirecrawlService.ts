@@ -18,16 +18,9 @@ interface CrawlStatusResponse {
 
 type CrawlResponse = CrawlStatusResponse | ErrorResponse;
 
-interface SearchEngineResponse {
-  emails: string[];
-  source: string;
-}
-
 export class FirecrawlService {
   private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
   private static firecrawlApp: FirecrawlApp | null = null;
-  private static USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
-  private static CORS_PROXY = 'https://api.allorigins.win/raw?url=';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -36,60 +29,6 @@ export class FirecrawlService {
 
   static getApiKey(): string | null {
     return localStorage.getItem(this.API_KEY_STORAGE_KEY);
-  }
-
-  private static async searchEmails(domain: string): Promise<SearchEngineResponse[]> {
-    try {
-      const results: SearchEngineResponse[] = [];
-      const emailRegex = new RegExp(`[a-zA-Z0-9._%+-]+@${domain.replace('.', '\\.')}`, 'g');
-
-      // Google search simulation with CORS proxy
-      try {
-        const googleSearchUrl = `https://www.google.com/search?q=intext:@${domain}&num=100`;
-        const googleUrl = `${this.CORS_PROXY}${encodeURIComponent(googleSearchUrl)}`;
-        const googleResponse = await fetch(googleUrl, {
-          headers: {
-            'User-Agent': this.USER_AGENT
-          }
-        });
-        
-        if (!googleResponse.ok) {
-          throw new Error(`HTTP error! status: ${googleResponse.status}`);
-        }
-        
-        const googleText = await googleResponse.text();
-        const googleEmails = [...new Set(googleText.match(emailRegex) || [])];
-        results.push({ emails: googleEmails, source: 'Google' });
-      } catch (error) {
-        console.error('Google search error:', error);
-      }
-
-      // Bing search simulation with CORS proxy
-      try {
-        const bingSearchUrl = `https://www.bing.com/search?q=inbody:@${domain}&count=50`;
-        const bingUrl = `${this.CORS_PROXY}${encodeURIComponent(bingSearchUrl)}`;
-        const bingResponse = await fetch(bingUrl, {
-          headers: {
-            'User-Agent': this.USER_AGENT
-          }
-        });
-        
-        if (!bingResponse.ok) {
-          throw new Error(`HTTP error! status: ${bingResponse.status}`);
-        }
-        
-        const bingText = await bingResponse.text();
-        const bingEmails = [...new Set(bingText.match(emailRegex) || [])];
-        results.push({ emails: bingEmails, source: 'Bing' });
-      } catch (error) {
-        console.error('Bing search error:', error);
-      }
-
-      return results;
-    } catch (error) {
-      console.error('Search error:', error);
-      return [];
-    }
   }
 
   private static extractNameFromEmail(email: string): string {
@@ -113,6 +52,11 @@ export class FirecrawlService {
     return 'Employee';
   }
 
+  private static extractEmailsFromText(text: string, domain: string): string[] {
+    const emailRegex = new RegExp(`[a-zA-Z0-9._%+-]+@${domain.replace('.', '\\.')}`, 'g');
+    return [...new Set(text.match(emailRegex) || [])];
+  }
+
   static async crawlWebsite(url: string): Promise<EmailResult[]> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
@@ -124,28 +68,45 @@ export class FirecrawlService {
       const urlObj = new URL(url);
       const domain = urlObj.hostname.replace('www.', '');
       
-      // Search for emails using multiple methods with CORS proxy
-      const searchResults = await this.searchEmails(domain);
-      
-      // Combine all found emails
-      const allEmails = new Set<string>();
-      searchResults.forEach(result => {
-        result.emails.forEach(email => allEmails.add(email));
+      if (!this.firecrawlApp) {
+        this.firecrawlApp = new FirecrawlApp({ apiKey });
+      }
+
+      // Use Firecrawl to get the website content
+      const response = await this.firecrawlApp.crawlUrl(url, {
+        limit: 10,
+        scrapeOptions: {
+          formats: ['text'],
+          selectors: ['body']
+        }
+      });
+
+      if (!response.success) {
+        throw new Error('Failed to crawl website');
+      }
+
+      // Extract emails from the crawled content
+      const emails = new Set<string>();
+      response.data.forEach((page: any) => {
+        if (page.content) {
+          const foundEmails = this.extractEmailsFromText(page.content, domain);
+          foundEmails.forEach(email => emails.add(email));
+        }
       });
 
       // Transform emails into EmailResult format
-      const results: EmailResult[] = Array.from(allEmails).map(email => ({
+      const results: EmailResult[] = Array.from(emails).map(email => ({
         name: this.extractNameFromEmail(email),
         email,
         designation: this.guessDesignation(email),
         company: domain
       }));
 
-      console.log(`Found ${results.length} unique emails from multiple sources`);
+      console.log(`Found ${results.length} unique emails`);
       return results;
     } catch (error) {
-      console.error('Error during email search:', error);
-      throw new Error(error instanceof Error ? error.message : 'Failed to search for emails');
+      console.error('Error during crawl:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to crawl website');
     }
   }
 }
