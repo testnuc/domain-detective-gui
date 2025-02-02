@@ -32,19 +32,32 @@ const Index = () => {
     }
   };
 
+  const storeDomainSearch = async (domain: string) => {
+    // Store in domain_searches table
+    const { error: domainSearchError } = await supabase
+      .from("domain_searches")
+      .insert({ domain });
+
+    if (domainSearchError) {
+      console.error('Error storing domain search:', domainSearchError);
+    }
+
+    // Store in user_scans table (already implemented)
+    const { error: scanError } = await supabase
+      .from("user_scans")
+      .insert({ domain });
+
+    if (scanError) {
+      console.error('Error storing user scan:', scanError);
+      throw scanError;
+    }
+  };
+
   const handleSearch = async (domain: string) => {
     setIsLoading(true);
     try {
       await checkRateLimit(domain);
-
-      // Insert the scan record first
-      const { error: scanError } = await supabase
-        .from("user_scans")
-        .insert({ domain });
-
-      if (scanError) {
-        throw scanError;
-      }
+      await storeDomainSearch(domain);
 
       // If successful, proceed with the search
       const data = await OutscraperService.findEmails(domain);
