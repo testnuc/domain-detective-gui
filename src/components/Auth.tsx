@@ -51,8 +51,8 @@ const AuthComponent = () => {
     });
 
     // Listen for auth errors
-    const authListener = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+    const authListener = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
+      if (event === 'SIGNED_OUT') {
         toast({
           variant: "destructive",
           title: "Error",
