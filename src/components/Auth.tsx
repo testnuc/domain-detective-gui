@@ -20,51 +20,49 @@ const AuthComponent = () => {
         }
 
         if (!user) {
-          console.log('No user found, creating demo user...');
-          const { data, error } = await supabase.auth.signInWithPassword({
+          console.log('No user found, attempting to create demo user...');
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: 'demo@domain-detective.com',
+            password: '123456',
+            options: {
+              emailRedirectTo: window.location.origin,
+              data: {
+                is_demo: true
+              }
+            }
+          });
+
+          if (signUpError) {
+            console.error('Error creating demo user:', signUpError);
+            toast({
+              title: "Error",
+              description: signUpError.message || "Could not create demo user. Please try again.",
+              variant: "destructive"
+            });
+            throw signUpError;
+          }
+
+          console.log('Demo user created, attempting to sign in...');
+          const { error: signInError } = await supabase.auth.signInWithPassword({
             email: 'demo@domain-detective.com',
             password: '123456',
           });
 
-          if (error?.message?.includes('Invalid login credentials')) {
-            console.log('User does not exist, creating new demo user...');
-            const { error: signUpError } = await supabase.auth.signUp({
-              email: 'demo@domain-detective.com',
-              password: '123456',
-              options: {
-                emailRedirectTo: window.location.origin,
-                data: {
-                  is_demo: true
-                }
-              }
-            });
-
-            if (signUpError) {
-              console.error('Error creating demo user:', signUpError);
-              toast({
-                title: "Error",
-                description: signUpError.message || "Could not create demo user. Please try again.",
-                variant: "destructive"
-              });
-              throw signUpError;
-            } else {
-              console.log('Demo user created successfully');
-              toast({
-                title: "Success",
-                description: "Demo user created successfully. You can now log in.",
-              });
-            }
-          } else if (error) {
-            console.error('Error signing in:', error);
+          if (signInError) {
+            console.error('Error signing in:', signInError);
             toast({
               title: "Error",
-              description: error.message || "Could not sign in. Please try again.",
+              description: signInError.message || "Could not sign in. Please try again.",
               variant: "destructive"
             });
-            throw error;
-          } else {
-            console.log('Demo user signed in successfully:', data);
+            throw signInError;
           }
+
+          console.log('Demo user signed in successfully');
+          toast({
+            title: "Success",
+            description: "Demo account created and signed in successfully.",
+          });
         } else {
           console.log('User already exists:', user.email);
         }
