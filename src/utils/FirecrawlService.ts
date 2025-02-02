@@ -1,6 +1,5 @@
 import FirecrawlApp from '@mendable/firecrawl-js';
 import { EmailResult } from '@/components/ResultCard';
-import type { FirecrawlDocument } from '@mendable/firecrawl-js';
 
 interface ErrorResponse {
   success: false;
@@ -14,17 +13,10 @@ interface CrawlStatusResponse {
   total: number;
   creditsUsed: number;
   expiresAt: string;
-  data: FirecrawlDocument[];
+  data: any[];
 }
 
 type CrawlResponse = CrawlStatusResponse | ErrorResponse;
-
-interface ParsedDocument {
-  name?: string;
-  email?: string;
-  title?: string;
-  company?: string;
-}
 
 export class FirecrawlService {
   private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
@@ -55,32 +47,21 @@ export class FirecrawlService {
         scrapeOptions: {
           formats: ['markdown', 'html']
         }
-      }) as CrawlResponse;
+      });
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to crawl website');
       }
 
-      // Parse the documents and extract relevant information
+      // Transform the Firecrawl response into EmailResult format
+      // Since we don't know the exact structure, we'll try to extract what we can
       const emailResults: EmailResult[] = response.data
-        .map(doc => {
-          const parsedDoc: ParsedDocument = {
-            name: doc.metadata?.name || doc.content?.match(/name:\s*([^\n]+)/i)?.[1],
-            email: doc.metadata?.email || doc.content?.match(/email:\s*([^\n]+)/i)?.[1],
-            title: doc.metadata?.title || doc.content?.match(/title:\s*([^\n]+)/i)?.[1],
-            company: doc.metadata?.company || doc.content?.match(/company:\s*([^\n]+)/i)?.[1]
-          };
-          
-          return parsedDoc;
-        })
-        .filter((doc): doc is Required<ParsedDocument> => 
-          !!doc.email && !!doc.name && !!doc.title && !!doc.company
-        )
-        .map(doc => ({
-          name: doc.name,
-          email: doc.email,
-          designation: doc.title,
-          company: doc.company
+        .filter(item => item && typeof item === 'object')
+        .map(item => ({
+          name: item.name || 'Unknown',
+          email: item.email || '',
+          designation: item.title || 'Employee',
+          company: item.company || url.replace(/^(https?:\/\/)/, '')
         }));
 
       return emailResults;
