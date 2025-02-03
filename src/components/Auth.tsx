@@ -41,6 +41,17 @@ const AuthComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
 
+  // Determine the redirect URL based on the current environment
+  const getRedirectUrl = () => {
+    const currentUrl = window.location.href;
+    if (currentUrl.includes('hunter.hackwithsingh.com')) {
+      return 'https://hunter.hackwithsingh.com';
+    } else if (currentUrl.includes('lovable.dev')) {
+      return 'https://lovable.dev/projects/76987ce9-2134-4b1a-9bcc-90863e2de5ef';
+    }
+    return 'https://www.hackwithsingh.com';
+  };
+
   useEffect(() => {
     // Initialize session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -121,11 +132,11 @@ const AuthComponent = () => {
             button: 'bg-fandom-primary hover:bg-fandom-secondary text-white',
             input: 'bg-black/20 border-white/10',
             label: 'text-white',
-            anchor: 'text-white hover:text-white/80', // Updated to white color
+            anchor: 'text-white hover:text-white/80',
           },
         }}
-        providers={[]}
-        redirectTo="https://www.hackwithsingh.com"
+        providers={['google']}
+        redirectTo={getRedirectUrl()}
         theme="dark"
         localization={{
           variables: {
