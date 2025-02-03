@@ -49,6 +49,10 @@ const Index = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto text-center mb-8">
+        <h1 className="text-4xl font-bold text-white mb-4">Email Hunter</h1>
+        <p className="text-xl text-white/80">Find professional email addresses in seconds</p>
+      </div>
       <div className="max-w-2xl mx-auto">
         <SearchBox onSearch={handleSearch} isLoading={isLoading} />
       </div>
