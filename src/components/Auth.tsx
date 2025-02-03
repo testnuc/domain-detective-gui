@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
 
 const isValidGmail = (email: string) => {
   // Strict Gmail validation - no dots or plus signs allowed
@@ -13,6 +14,7 @@ const isValidGmail = (email: string) => {
 
 const AuthComponent = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
 
@@ -20,6 +22,9 @@ const AuthComponent = () => {
     // Initialize session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session) {
+        navigate('/');
+      }
     });
 
     // Listen for auth changes
@@ -33,6 +38,7 @@ const AuthComponent = () => {
           title: "Success",
           description: "Successfully signed in!",
         });
+        navigate('/');
       } else if (event === 'USER_UPDATED') {
         toast({
           title: "Success",
@@ -66,7 +72,7 @@ const AuthComponent = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [toast]);
+  }, [toast, navigate]);
 
   if (isLoading) {
     return (
