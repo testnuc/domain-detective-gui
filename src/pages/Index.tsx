@@ -7,11 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import CelebrationScreen from '@/components/CelebrationScreen';
 import ResultCard, { EmailResult } from '@/components/ResultCard';
 import { OutscraperService } from '@/utils/OutscraperService';
+import { format } from 'date-fns';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [scansRemaining, setScansRemaining] = useState(5);
   const [timeUntilReset, setTimeUntilReset] = useState<string | null>(null);
+  const [resetTime, setResetTime] = useState<Date | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [searchResults, setSearchResults] = useState<EmailResult[]>([]);
   const [searchedDomain, setSearchedDomain] = useState('');
@@ -46,7 +48,6 @@ const Index = () => {
     }
 
     if (!scanLimit) {
-      // Create initial scan limit record for user
       const { error: insertError } = await supabase
         .from('user_scan_limits')
         .insert([{ 
@@ -62,6 +63,7 @@ const Index = () => {
       
       setScansRemaining(5);
       setTimeUntilReset(null);
+      setResetTime(null);
       return;
     }
 
@@ -71,18 +73,22 @@ const Index = () => {
 
     if (hoursSinceReset >= 24) {
       // Reset scan count after 24 hours
+      const newResetTime = new Date();
       await supabase
         .from('user_scan_limits')
         .update({ 
           scan_count: 0, 
-          last_reset_time: now.toISOString() 
+          last_reset_time: newResetTime.toISOString() 
         })
         .eq('user_id', user.id);
       setScansRemaining(5);
       setTimeUntilReset(null);
+      setResetTime(newResetTime);
     } else {
       setScansRemaining(5 - (scanLimit.scan_count || 0));
       if (scanLimit.scan_count >= 5) {
+        const nextResetTime = new Date(lastResetTime.getTime() + (24 * 60 * 60 * 1000));
+        setResetTime(nextResetTime);
         const minutesUntilReset = Math.ceil((24 - hoursSinceReset) * 60);
         setTimeUntilReset(`${Math.floor(minutesUntilReset / 60)}h ${minutesUntilReset % 60}m`);
       }
@@ -91,6 +97,9 @@ const Index = () => {
 
   useEffect(() => {
     checkScanLimits();
+    // Set up an interval to check scan limits every minute
+    const interval = setInterval(checkScanLimits, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSearch = async (domain: string) => {
@@ -119,10 +128,10 @@ const Index = () => {
         const hoursSinceReset = (now.getTime() - lastResetTime.getTime()) / (1000 * 60 * 60);
         
         if (hoursSinceReset < 24) {
-          const minutesUntilReset = Math.ceil((24 - hoursSinceReset) * 60);
+          const nextResetTime = new Date(lastResetTime.getTime() + (24 * 60 * 60 * 1000));
           toast({
             title: "Scan Limit Reached",
-            description: `You've reached your daily scan limit. Please try again in ${Math.floor(minutesUntilReset / 60)}h ${minutesUntilReset % 60}m`,
+            description: `You've reached your daily scan limit. Next scan available at ${format(nextResetTime, 'h:mm a')}`,
             variant: "destructive",
           });
           return;
@@ -193,15 +202,14 @@ const Index = () => {
         <div className="mt-4 text-center">
           <p className="text-white/80">
             Scans Remaining Today: <span className="font-bold text-white">{scansRemaining}</span>
-            {timeUntilReset && (
+            {resetTime && scansRemaining === 0 && (
               <span className="ml-2 text-white/60">
-                (Resets in {timeUntilReset})
+                (Reset at {format(resetTime, 'h:mm a')})
               </span>
             )}
           </p>
         </div>
 
-        {/* Results Section */}
         {searchResults.length > 0 && !showCelebration && (
           <div className="mt-8 space-y-4">
             {searchResults.map((result, index) => (
