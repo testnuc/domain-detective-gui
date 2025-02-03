@@ -50,9 +50,11 @@ const AuthComponent = () => {
       }
     });
 
-    // Listen for auth errors
-    supabase.auth.onError((error) => {
-      if (error.message.includes('Invalid login credentials')) {
+    // Listen for auth errors using the correct method
+    const {
+      data: { subscription: errorSubscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' && !session) {
         toast({
           variant: "destructive",
           title: "Error",
@@ -63,6 +65,7 @@ const AuthComponent = () => {
 
     return () => {
       subscription.unsubscribe();
+      errorSubscription.unsubscribe();
     };
   }, [toast]);
 
