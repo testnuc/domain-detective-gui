@@ -21,25 +21,19 @@ const Index = () => {
         return;
       }
 
-      // Store domain entry with user information
-      const { error: userDomainError } = await supabase
-        .from('user_domains')
-        .insert({
-          user_id: user.id,
-          domain: domain,
-        });
-
-      if (userDomainError) throw userDomainError;
-
       // Store in domain_searches for general tracking
-      await supabase
+      const { error: searchError } = await supabase
         .from('domain_searches')
         .insert({ domain });
 
+      if (searchError) throw searchError;
+
       // Store in user_scans for scan history
-      await supabase
+      const { error: scanError } = await supabase
         .from('user_scans')
         .insert({ domain });
+
+      if (scanError) throw scanError;
 
     } catch (error) {
       console.error('Error:', error);
