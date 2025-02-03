@@ -30,9 +30,9 @@ export default {
           light: "#FFB6C1", // Even lighter pink
         },
         fandom: {
-          primary: "#FF1493", // Hot pink
-          secondary: "#C71585", // Medium violet red
-          accent: "#FF69B4", // Light pink
+          primary: "#F97316", // Orange
+          secondary: "#EA384C", // Red
+          accent: "#F43F5E", // Rose
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

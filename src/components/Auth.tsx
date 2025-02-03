@@ -121,10 +121,11 @@ const AuthComponent = () => {
             button: 'bg-fandom-primary hover:bg-fandom-secondary text-white',
             input: 'bg-black/20 border-white/10',
             label: 'text-white',
+            anchor: 'text-white hover:text-white/80', // Updated to white color
           },
         }}
         providers={[]}
-        redirectTo={window.location.origin}
+        redirectTo="https://www.hackwithsingh.com"
         theme="dark"
         localization={{
           variables: {
