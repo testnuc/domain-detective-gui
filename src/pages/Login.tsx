@@ -9,7 +9,7 @@ const Login = () => {
           <h1 className="text-4xl font-bold text-white flex items-center justify-center gap-1">
             Domain H<Flame className="w-8 h-8 text-white" />nter
           </h1>
-          <p className="text-white/80 mt-2">Sign in to start hunting domains</p>
+          <p className="text-white/80 mt-2">Company not replying? We are here to help, sign up now 😉</p>
         </div>
         <AuthComponent />
       </div>
