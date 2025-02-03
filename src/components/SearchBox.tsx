@@ -52,11 +52,11 @@ const SearchBox = ({ onSearch, isLoading }: SearchBoxProps) => {
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="bg-fandom-accent hover:bg-fandom-accent/90 text-fandom-secondary px-4 py-2 h-10 rounded-full transition-all duration-200 disabled:bg-white/5 disabled:text-white/40 font-semibold text-sm"
+            className="bg-fandom-accent hover:bg-fandom-accent/90 text-white px-4 py-2 h-10 rounded-full transition-all duration-200 disabled:bg-white/5 disabled:text-white/40 font-semibold text-sm"
           >
             {isLoading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-fandom-secondary border-t-transparent mr-2"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
                 Searching...
               </>
             ) : (
