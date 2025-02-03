@@ -14,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { X } from "lucide-react";
 
 const AuthComponent = () => {
   const { toast } = useToast();
@@ -107,7 +108,13 @@ const AuthComponent = () => {
       </div>
 
       <AlertDialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
-        <AlertDialogContent className="glass-dark text-white">
+        <AlertDialogContent className="glass-dark text-white relative">
+          <button
+            onClick={() => setShowWelcomeDialog(false)}
+            className="absolute right-4 top-4 p-2 hover:bg-white/10 rounded-full"
+          >
+            <X className="h-4 w-4 text-white" />
+          </button>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-bold text-white">Welcome to Domain Hunter</AlertDialogTitle>
             <AlertDialogDescription className="text-white/90 space-y-4">
@@ -119,6 +126,9 @@ const AuthComponent = () => {
               </p>
               <p>
                 Our method, trusted by professionals, ensures 99% success by targeting decision-makers and automating personalized follow-ups.
+              </p>
+              <p>
+                Whether you're in sales, marketing, or recruitment, Domain Hunter saves time, boosts responses, and gets you closer to your goals.
               </p>
               <p className="font-semibold text-fandom-primary">
                 Want to remove the limit of 5? Sponsor the product for just ₹999 and enjoy 1 month of unlimited scans!

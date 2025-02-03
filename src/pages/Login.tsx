@@ -3,6 +3,7 @@ import { Flame } from 'lucide-react';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import GiftButton from '@/components/GiftButton';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center py-16 px-4 bg-gradient-to-br from-fandom-primary via-fandom-secondary to-fandom-accent">
+      <GiftButton />
       <div className="container mx-auto max-w-7xl flex flex-col items-center">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white flex items-center justify-center gap-1">
