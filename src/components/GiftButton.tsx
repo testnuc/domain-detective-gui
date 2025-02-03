@@ -18,7 +18,7 @@ const GiftButton = () => {
     <>
       <button
         onClick={() => setShowDialog(true)}
-        className="fixed top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+        className="fixed bottom-4 left-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
       >
         <Gift className="h-6 w-6 text-white" />
       </button>
