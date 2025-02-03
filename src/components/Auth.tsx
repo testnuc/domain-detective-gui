@@ -43,13 +43,7 @@ const AuthComponent = () => {
 
   // Determine the redirect URL based on the current environment
   const getRedirectUrl = () => {
-    const currentUrl = window.location.href;
-    if (currentUrl.includes('hunter.hackwithsingh.com')) {
-      return 'https://hunter.hackwithsingh.com';
-    } else if (currentUrl.includes('lovable.dev')) {
-      return 'https://lovable.dev/projects/76987ce9-2134-4b1a-9bcc-90863e2de5ef';
-    }
-    return 'https://www.hackwithsingh.com';
+    return 'https://hunter.hackwithsingh.com';
   };
 
   useEffect(() => {
