@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import SearchBox from '@/components/SearchBox';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, Flame } from 'lucide-react';
+import { LogOut, Flame, Target, Rocket, Shield, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CelebrationScreen from '@/components/CelebrationScreen';
 import ResultCard, { EmailResult } from '@/components/ResultCard';
@@ -191,11 +191,31 @@ const Index = () => {
         Logout
       </button>
 
-      <div className="max-w-2xl mx-auto text-center mb-8">
+      <div className="max-w-4xl mx-auto text-center mb-12">
         <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-1">
           Domain H<Flame className="w-8 h-8 text-white" />nter
         </h1>
-        <p className="text-xl text-white/80">Find professional email addresses in seconds</p>
+        <p className="text-xl text-white/80 mb-6">Find Professional Email Addresses in Seconds</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 mb-12">
+          <div className="glass-dark p-6 rounded-xl">
+            <Target className="w-8 h-8 text-white mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-white mb-2">Sales & Marketing</h2>
+            <p className="text-white/80">Connect directly with decision-makers to boost your conversion rates</p>
+          </div>
+          
+          <div className="glass-dark p-6 rounded-xl">
+            <Rocket className="w-8 h-8 text-white mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-white mb-2">Recruiters</h2>
+            <p className="text-white/80">Reach top talent and hiring managers efficiently</p>
+          </div>
+          
+          <div className="glass-dark p-6 rounded-xl">
+            <Shield className="w-8 h-8 text-white mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-white mb-2">Security Research</h2>
+            <p className="text-white/80">Contact security teams for responsible disclosure</p>
+          </div>
+        </div>
       </div>
 
       <div className="max-w-2xl mx-auto">
@@ -228,6 +248,20 @@ const Index = () => {
           onComplete={() => setShowCelebration(false)}
         />
       )}
+
+      {/* Hidden SEO content */}
+      <div className="sr-only">
+        <h2>Professional Email Finder Tool</h2>
+        <p>Domain Hunter is the ultimate tool for finding professional email addresses of company executives, CTOs, CEOs, and decision-makers. Perfect for sales teams, marketers, recruiters, and security researchers conducting bug bounty programs.</p>
+        <h3>Features</h3>
+        <ul>
+          <li>Verify email addresses of company leadership</li>
+          <li>Direct access to decision-makers</li>
+          <li>Ideal for B2B sales and marketing</li>
+          <li>Security research and responsible disclosure</li>
+          <li>Recruitment and talent acquisition</li>
+        </ul>
+      </div>
     </div>
   );
 };
