@@ -43,7 +43,18 @@ const AuthComponent = () => {
           title: "Success",
           description: "Successfully signed out!",
         });
-      } else if (event === 'USER_DELETED') {
+      } else if (event === 'PASSWORD_RECOVERY') {
+        toast({
+          title: "Error",
+          description: "Invalid login credentials. Please try again.",
+          variant: "destructive"
+        });
+      }
+    });
+
+    // Handle authentication errors
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (!session && event === 'SIGNED_OUT') {
         toast({
           title: "Error",
           description: "Invalid login credentials. Please try again.",
@@ -56,15 +67,6 @@ const AuthComponent = () => {
       subscription.unsubscribe();
     };
   }, [toast]);
-
-  const handleError = (error: Error) => {
-    console.error('Auth error:', error);
-    toast({
-      title: "Error",
-      description: "Invalid login credentials. Please try again.",
-      variant: "destructive"
-    });
-  };
 
   if (isLoading) {
     return (
@@ -102,7 +104,6 @@ const AuthComponent = () => {
         providers={[]}
         redirectTo={window.location.origin}
         theme="dark"
-        onError={handleError}
         localization={{
           variables: {
             sign_in: {
