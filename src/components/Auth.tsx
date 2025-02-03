@@ -43,6 +43,12 @@ const AuthComponent = () => {
           title: "Success",
           description: "Successfully signed out!",
         });
+      } else if (event === 'USER_DELETED') {
+        toast({
+          title: "Error",
+          description: "Invalid login credentials. Please try again.",
+          variant: "destructive"
+        });
       }
     });
 
@@ -50,6 +56,15 @@ const AuthComponent = () => {
       subscription.unsubscribe();
     };
   }, [toast]);
+
+  const handleError = (error: Error) => {
+    console.error('Auth error:', error);
+    toast({
+      title: "Error",
+      description: "Invalid login credentials. Please try again.",
+      variant: "destructive"
+    });
+  };
 
   if (isLoading) {
     return (
@@ -87,6 +102,7 @@ const AuthComponent = () => {
         providers={[]}
         redirectTo={window.location.origin}
         theme="dark"
+        onError={handleError}
         localization={{
           variables: {
             sign_in: {
