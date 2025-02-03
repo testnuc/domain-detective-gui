@@ -6,10 +6,33 @@ import { useToast } from '@/hooks/use-toast';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 
-const isValidGmail = (email: string) => {
-  // Strict Gmail validation - no dots or plus signs allowed
-  const strictGmailRegex = /^[a-zA-Z0-9]+@gmail\.com$/;
-  return strictGmailRegex.test(email);
+// List of known temporary email domains
+const TEMP_EMAIL_DOMAINS = [
+  'tempmail.com',
+  'temp-mail.org',
+  'guerrillamail.com',
+  'disposablemail.com',
+  'mailinator.com',
+  '10minutemail.com',
+  'throwawaymail.com'
+];
+
+const isValidEmail = (email: string) => {
+  // Check for Gmail aliases (dots and plus signs)
+  if (email.toLowerCase().endsWith('@gmail.com')) {
+    const localPart = email.split('@')[0];
+    if (localPart.includes('+') || localPart.includes('.')) {
+      return false;
+    }
+  }
+
+  // Check for temporary email domains
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (TEMP_EMAIL_DOMAINS.includes(domain)) {
+    return false;
+  }
+
+  return true;
 };
 
 const AuthComponent = () => {
@@ -34,11 +57,21 @@ const AuthComponent = () => {
       setSession(session);
       
       if (event === 'SIGNED_IN') {
-        toast({
-          title: "Success",
-          description: "Successfully signed in!",
-        });
-        navigate('/');
+        if (session?.user.email_confirmed_at) {
+          toast({
+            title: "Success",
+            description: "Successfully signed in!",
+          });
+          navigate('/');
+        } else {
+          toast({
+            title: "Verification Required",
+            description: "Please check your email and verify your account before signing in.",
+            variant: "destructive"
+          });
+          // Sign out if email is not verified
+          await supabase.auth.signOut();
+        }
       } else if (event === 'USER_UPDATED') {
         toast({
           title: "Success",
@@ -49,23 +82,6 @@ const AuthComponent = () => {
           title: "Success",
           description: "Successfully signed out!",
         });
-      } else if (event === 'PASSWORD_RECOVERY') {
-        toast({
-          title: "Error",
-          description: "Invalid login credentials. Please try again.",
-          variant: "destructive"
-        });
-      }
-    });
-
-    // Handle authentication errors
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (!session && event === 'SIGNED_OUT') {
-        toast({
-          title: "Error",
-          description: "Invalid login credentials. Please try again.",
-          variant: "destructive"
-        });
       }
     });
 
@@ -73,6 +89,41 @@ const AuthComponent = () => {
       subscription.unsubscribe();
     };
   }, [toast, navigate]);
+
+  // Custom sign up handler
+  const handleSignUp = async ({ email, password }: { email: string; password: string }) => {
+    if (!isValidEmail(email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Gmail aliases and temporary email addresses are not allowed.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Please check your email to verify your account.",
+      });
+    }
+    setIsLoading(false);
+  };
 
   if (isLoading) {
     return (
@@ -110,8 +161,17 @@ const AuthComponent = () => {
         providers={[]}
         redirectTo={window.location.origin}
         theme="dark"
+        onSignUp={handleSignUp}
         localization={{
           variables: {
+            sign_up: {
+              email_label: 'Email',
+              password_label: 'Password',
+              button_label: 'Sign up',
+              loading_button_label: 'Signing up ...',
+              link_text: "Don't have an account? Sign up",
+              confirmation_text: "Check your email for the confirmation link",
+            },
             sign_in: {
               email_input_placeholder: 'Your email',
               password_input_placeholder: 'Your password',
@@ -119,7 +179,6 @@ const AuthComponent = () => {
               password_label: 'Password',
               button_label: 'Sign in',
               loading_button_label: 'Signing in ...',
-              social_provider_text: 'Sign in with {{provider}}',
               link_text: "Already have an account? Sign in",
             },
           },
