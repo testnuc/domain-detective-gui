@@ -4,11 +4,17 @@ import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import CelebrationScreen from '@/components/CelebrationScreen';
+import ResultCard, { EmailResult } from '@/components/ResultCard';
+import { OutscraperService } from '@/utils/OutscraperService';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [scansRemaining, setScansRemaining] = useState(5);
   const [timeUntilReset, setTimeUntilReset] = useState<string | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [searchResults, setSearchResults] = useState<EmailResult[]>([]);
+  const [searchedDomain, setSearchedDomain] = useState('');
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -148,10 +154,12 @@ const Index = () => {
 
       await checkScanLimits();
 
-      toast({
-        title: "Success",
-        description: "Domain search completed successfully",
-      });
+      // Fetch results using OutscraperService
+      const results = await OutscraperService.findEmails(domain);
+      setSearchResults(results);
+      setSearchedDomain(domain);
+      setShowCelebration(true);
+
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -192,7 +200,24 @@ const Index = () => {
             )}
           </p>
         </div>
+
+        {/* Results Section */}
+        {searchResults.length > 0 && !showCelebration && (
+          <div className="mt-8 space-y-4">
+            {searchResults.map((result, index) => (
+              <ResultCard key={index} result={result} />
+            ))}
+          </div>
+        )}
       </div>
+
+      {showCelebration && (
+        <CelebrationScreen
+          domain={searchedDomain}
+          resultsCount={searchResults.length}
+          onComplete={() => setShowCelebration(false)}
+        />
+      )}
     </div>
   );
 };
