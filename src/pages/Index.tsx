@@ -32,7 +32,7 @@ const Index = () => {
       .from('user_scan_limits')
       .select('*')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (error && error.code !== 'PGRST116') {
       console.error('Error fetching scan limits:', error);
@@ -41,10 +41,21 @@ const Index = () => {
 
     if (!scanLimit) {
       // Create initial scan limit record for user
-      await supabase
+      const { error: insertError } = await supabase
         .from('user_scan_limits')
-        .insert([{ user_id: user.id, scan_count: 0 }]);
+        .insert([{ 
+          user_id: user.id, 
+          scan_count: 0,
+          last_reset_time: new Date().toISOString()
+        }]);
+      
+      if (insertError) {
+        console.error('Error creating scan limit:', insertError);
+        return;
+      }
+      
       setScansRemaining(5);
+      setTimeUntilReset(null);
       return;
     }
 
@@ -56,12 +67,15 @@ const Index = () => {
       // Reset scan count after 24 hours
       await supabase
         .from('user_scan_limits')
-        .update({ scan_count: 0, last_reset_time: now.toISOString() })
+        .update({ 
+          scan_count: 0, 
+          last_reset_time: now.toISOString() 
+        })
         .eq('user_id', user.id);
       setScansRemaining(5);
       setTimeUntilReset(null);
     } else {
-      setScansRemaining(5 - scanLimit.scan_count);
+      setScansRemaining(5 - (scanLimit.scan_count || 0));
       if (scanLimit.scan_count >= 5) {
         const minutesUntilReset = Math.ceil((24 - hoursSinceReset) * 60);
         setTimeUntilReset(`${Math.floor(minutesUntilReset / 60)}h ${minutesUntilReset % 60}m`);
@@ -91,7 +105,7 @@ const Index = () => {
         .from('user_scan_limits')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (scanLimit && scanLimit.scan_count >= 5) {
         const lastResetTime = new Date(scanLimit.last_reset_time);
