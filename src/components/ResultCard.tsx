@@ -1,5 +1,6 @@
-import { Mail, Briefcase, Building2, User } from "lucide-react";
+import { Mail, Briefcase, Building2, User, Copy } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
 
 export interface EmailResult {
   name: string;
@@ -13,6 +14,22 @@ interface ResultCardProps {
 }
 
 const ResultCard = ({ result }: ResultCardProps) => {
+  // Function to capitalize first letter of each word
+  const capitalize = (str: string) => {
+    return str
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(result.email);
+    toast({
+      title: "Email Copied",
+      description: "Email address has been copied to clipboard",
+    });
+  };
+
   return (
     <Card className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
       <div className="flex flex-col gap-4">
@@ -22,8 +39,8 @@ const ResultCard = ({ result }: ResultCardProps) => {
               <User className="w-5 h-5 text-fandom-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">{result.name}</h3>
-              <p className="text-sm text-gray-500">{result.designation}</p>
+              <h3 className="text-lg font-semibold text-gray-900">{capitalize(result.name)}</h3>
+              <p className="text-sm text-gray-500">{capitalize(result.designation)}</p>
             </div>
           </div>
           <span className="px-3 py-1 bg-fandom-primary/10 text-fandom-primary text-xs font-medium rounded-full">
@@ -32,14 +49,23 @@ const ResultCard = ({ result }: ResultCardProps) => {
         </div>
         
         <div className="flex flex-col gap-3 mt-2">
-          <div className="flex items-center gap-3 text-gray-700">
-            <Mail className="w-4 h-4 text-fandom-primary" />
-            <span className="text-sm font-medium break-all">{result.email}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 text-gray-700">
+              <Mail className="w-4 h-4 text-fandom-primary" />
+              <span className="text-sm font-medium break-all">{result.email}</span>
+            </div>
+            <button
+              onClick={handleCopyEmail}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              title="Copy email address"
+            >
+              <Copy className="w-4 h-4 text-gray-600" />
+            </button>
           </div>
           
           <div className="flex items-center gap-3 text-gray-600">
             <Briefcase className="w-4 h-4 text-fandom-primary" />
-            <span className="text-sm">{result.designation}</span>
+            <span className="text-sm">{capitalize(result.designation)}</span>
           </div>
           
           <div className="flex items-center gap-3 text-gray-600">
