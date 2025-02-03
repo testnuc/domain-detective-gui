@@ -22,14 +22,14 @@ const Index = () => {
       }
 
       // Store domain entry with user information
-      const { error } = await supabase
+      const { error: userDomainError } = await supabase
         .from('user_domains')
         .insert({
           user_id: user.id,
           domain: domain,
         });
 
-      if (error) throw error;
+      if (userDomainError) throw userDomainError;
 
       // Store in domain_searches for general tracking
       await supabase
