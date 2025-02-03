@@ -6,34 +6,6 @@ import { useToast } from '@/hooks/use-toast';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 
-const TEMP_EMAIL_DOMAINS = [
-  'tempmail.com',
-  'temp-mail.org',
-  'guerrillamail.com',
-  'disposablemail.com',
-  'mailinator.com',
-  '10minutemail.com',
-  'throwawaymail.com'
-];
-
-const isValidEmail = (email: string) => {
-  // Check for Gmail aliases (dots and plus signs)
-  if (email.toLowerCase().endsWith('@gmail.com')) {
-    const localPart = email.split('@')[0];
-    if (localPart.includes('+') || localPart.includes('.')) {
-      return false;
-    }
-  }
-
-  // Check for temporary email domains
-  const domain = email.split('@')[1]?.toLowerCase();
-  if (TEMP_EMAIL_DOMAINS.includes(domain)) {
-    return false;
-  }
-
-  return true;
-};
-
 const AuthComponent = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -125,30 +97,11 @@ const AuthComponent = () => {
             anchor: 'text-white hover:text-white/80',
           },
         }}
+        view="sign_in"
+        showLinks={false}
         providers={['google']}
         redirectTo={redirectUrl}
         theme="dark"
-        localization={{
-          variables: {
-            sign_up: {
-              email_label: 'Email',
-              password_label: 'Password',
-              button_label: 'Sign up',
-              loading_button_label: 'Signing up ...',
-              link_text: "Don't have an account? Sign up",
-              confirmation_text: "Check your email for the confirmation link",
-            },
-            sign_in: {
-              email_input_placeholder: 'Your email',
-              password_input_placeholder: 'Your password',
-              email_label: 'Email',
-              password_label: 'Password',
-              button_label: 'Sign in',
-              loading_button_label: 'Signing in ...',
-              link_text: "Already have an account? Sign in",
-            },
-          },
-        }}
       />
     </div>
   );
