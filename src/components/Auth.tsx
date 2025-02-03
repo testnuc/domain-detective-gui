@@ -30,26 +30,11 @@ const AuthComponent = () => {
       setSession(session);
       
       if (event === 'SIGNED_IN') {
-        if (session?.user.email_confirmed_at) {
-          toast({
-            title: "Success",
-            description: "Successfully signed in!",
-          });
-          navigate('/');
-        } else {
-          toast({
-            title: "Verification Required",
-            description: "Please check your email and verify your account before signing in.",
-            variant: "destructive"
-          });
-          // Sign out if email is not verified
-          await supabase.auth.signOut();
-        }
-      } else if (event === 'USER_UPDATED') {
         toast({
           title: "Success",
-          description: "Please check your email to verify your account.",
+          description: "Successfully signed in!",
         });
+        navigate('/');
       } else if (event === 'SIGNED_OUT') {
         toast({
           title: "Success",
