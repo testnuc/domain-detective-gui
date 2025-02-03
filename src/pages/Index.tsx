@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import SearchBox from '@/components/SearchBox';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut } from 'lucide-react';
+import { LogOut, Flame } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CelebrationScreen from '@/components/CelebrationScreen';
 import ResultCard, { EmailResult } from '@/components/ResultCard';
@@ -192,7 +192,9 @@ const Index = () => {
       </button>
 
       <div className="max-w-2xl mx-auto text-center mb-8">
-        <h1 className="text-4xl font-bold text-white mb-4">Email Hunter</h1>
+        <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-1">
+          Domain H<Flame className="w-8 h-8 text-orange-500" />nter
+        </h1>
         <p className="text-xl text-white/80">Find professional email addresses in seconds</p>
       </div>
 
