@@ -25,47 +25,29 @@ const AuthComponent = () => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+    } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       setSession(session);
       
-      switch (event) {
-        case 'SIGNED_IN':
-          toast({
-            title: "Success",
-            description: "Successfully signed in!",
-          });
-          break;
-        case 'USER_UPDATED':
-          toast({
-            title: "Success",
-            description: "Please check your email to verify your account.",
-          });
-          break;
-        case 'SIGNED_OUT':
-          toast({
-            title: "Success",
-            description: "Successfully signed out!",
-          });
-          break;
-      }
-    });
-
-    // Listen for auth errors using the correct method
-    const {
-      data: { subscription: errorSubscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' && !session) {
+      if (event === 'SIGNED_IN') {
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Invalid email or password. Please try again.",
+          title: "Success",
+          description: "Successfully signed in!",
+        });
+      } else if (event === 'USER_UPDATED') {
+        toast({
+          title: "Success",
+          description: "Please check your email to verify your account.",
+        });
+      } else if (event === 'SIGNED_OUT') {
+        toast({
+          title: "Success",
+          description: "Successfully signed out!",
         });
       }
     });
 
     return () => {
       subscription.unsubscribe();
-      errorSubscription.unsubscribe();
     };
   }, [toast]);
 
@@ -105,6 +87,13 @@ const AuthComponent = () => {
         providers={[]}
         redirectTo={window.location.origin}
         theme="dark"
+        onError={(error) => {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Invalid email or password. Please try again.",
+          });
+        }}
       />
     </div>
   );
