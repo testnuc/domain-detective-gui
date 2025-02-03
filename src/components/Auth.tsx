@@ -87,6 +87,7 @@ const AuthComponent = () => {
         providers={['google']}
         redirectTo={redirectUrl}
         theme="dark"
+        onlyThirdPartyProviders={true}
       />
     </div>
   );
