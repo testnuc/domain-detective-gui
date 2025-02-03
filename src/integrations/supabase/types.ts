@@ -27,6 +27,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_scan_limits: {
+        Row: {
+          id: string
+          last_reset_time: string | null
+          scan_count: number | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          last_reset_time?: string | null
+          scan_count?: number | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          last_reset_time?: string | null
+          scan_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_scans: {
         Row: {
           created_at: string

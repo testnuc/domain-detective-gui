@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBox from '@/components/SearchBox';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,8 +7,9 @@ import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [scansRemaining, setScansRemaining] = useState(5);
+  const [timeUntilReset, setTimeUntilReset] = useState<string | null>(null);
   const navigate = useNavigate();
-  const totalScansRemaining = 100; // You can replace this with actual remaining scans logic
 
   const handleLogout = async () => {
     try {
@@ -23,12 +24,59 @@ const Index = () => {
     }
   };
 
+  const checkScanLimits = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: scanLimit, error } = await supabase
+      .from('user_scan_limits')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching scan limits:', error);
+      return;
+    }
+
+    if (!scanLimit) {
+      // Create initial scan limit record for user
+      await supabase
+        .from('user_scan_limits')
+        .insert([{ user_id: user.id, scan_count: 0 }]);
+      setScansRemaining(5);
+      return;
+    }
+
+    const lastResetTime = new Date(scanLimit.last_reset_time);
+    const now = new Date();
+    const hoursSinceReset = (now.getTime() - lastResetTime.getTime()) / (1000 * 60 * 60);
+
+    if (hoursSinceReset >= 24) {
+      // Reset scan count after 24 hours
+      await supabase
+        .from('user_scan_limits')
+        .update({ scan_count: 0, last_reset_time: now.toISOString() })
+        .eq('user_id', user.id);
+      setScansRemaining(5);
+      setTimeUntilReset(null);
+    } else {
+      setScansRemaining(5 - scanLimit.scan_count);
+      if (scanLimit.scan_count >= 5) {
+        const minutesUntilReset = Math.ceil((24 - hoursSinceReset) * 60);
+        setTimeUntilReset(`${Math.floor(minutesUntilReset / 60)}h ${minutesUntilReset % 60}m`);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkScanLimits();
+  }, []);
+
   const handleSearch = async (domain: string) => {
     setIsLoading(true);
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         toast({
           title: "Error",
@@ -36,6 +84,29 @@ const Index = () => {
           variant: "destructive",
         });
         return;
+      }
+
+      // Check scan limits before proceeding
+      const { data: scanLimit } = await supabase
+        .from('user_scan_limits')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (scanLimit && scanLimit.scan_count >= 5) {
+        const lastResetTime = new Date(scanLimit.last_reset_time);
+        const now = new Date();
+        const hoursSinceReset = (now.getTime() - lastResetTime.getTime()) / (1000 * 60 * 60);
+        
+        if (hoursSinceReset < 24) {
+          const minutesUntilReset = Math.ceil((24 - hoursSinceReset) * 60);
+          toast({
+            title: "Scan Limit Reached",
+            description: `You've reached your daily scan limit. Please try again in ${Math.floor(minutesUntilReset / 60)}h ${minutesUntilReset % 60}m`,
+            variant: "destructive",
+          });
+          return;
+        }
       }
 
       // Store in domain_searches for general tracking
@@ -52,6 +123,21 @@ const Index = () => {
 
       if (scanError) throw scanError;
 
+      // Update scan count
+      await supabase
+        .from('user_scan_limits')
+        .update({ 
+          scan_count: scanLimit ? scanLimit.scan_count + 1 : 1,
+          last_reset_time: scanLimit ? scanLimit.last_reset_time : new Date().toISOString()
+        })
+        .eq('user_id', user.id);
+
+      await checkScanLimits();
+
+      toast({
+        title: "Success",
+        description: "Domain search completed successfully",
+      });
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -66,7 +152,6 @@ const Index = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 relative">
-      {/* Logout Button */}
       <button
         onClick={handleLogout}
         className="absolute top-4 right-4 flex items-center gap-2 text-white/80 hover:text-white transition-colors glass px-4 py-2 rounded-full"
@@ -83,10 +168,14 @@ const Index = () => {
       <div className="max-w-2xl mx-auto">
         <SearchBox onSearch={handleSearch} isLoading={isLoading} />
         
-        {/* Total Scans Counter */}
         <div className="mt-4 text-center">
           <p className="text-white/80">
-            Total Scans Remaining: <span className="font-bold text-white">{totalScansRemaining}</span>
+            Scans Remaining Today: <span className="font-bold text-white">{scansRemaining}</span>
+            {timeUntilReset && (
+              <span className="ml-2 text-white/60">
+                (Resets in {timeUntilReset})
+              </span>
+            )}
           </p>
         </div>
       </div>
