@@ -24,7 +24,7 @@ const GiftButton = () => {
       </button>
 
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-        <AlertDialogContent className="glass-dark text-white relative">
+        <AlertDialogContent className="glass-dark text-white relative fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 max-h-[90vh] overflow-y-auto">
           <button
             onClick={() => setShowDialog(false)}
             className="absolute right-4 top-4 p-2 hover:bg-white/10 rounded-full"
