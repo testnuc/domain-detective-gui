@@ -71,5 +71,5 @@
 }
 
 .auth-button {
-  @apply w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-200;
+  @apply w-full bg-gradient-to-r from-[#4F46E5] to-[#F43F5E] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-200;
 }
