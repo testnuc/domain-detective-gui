@@ -27,20 +27,16 @@
   }
 
   body {
-    @apply min-h-screen;
+    @apply min-h-screen overflow-hidden;
+    margin: 0;
+    padding: 0;
   }
 }
 
 @keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .glass {
@@ -61,4 +57,19 @@
 
 .result-card {
   @apply glass-dark p-6 rounded-2xl transition-all duration-300 hover:bg-black/40 hover:scale-[1.02];
+}
+
+.auth-container {
+  @apply bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/20;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.auth-input {
+  @apply w-full bg-white/10 border-white/20 text-white placeholder:text-white/60;
+}
+
+.auth-button {
+  @apply w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 text-white font-medium py-2.5 rounded-lg transition-all duration-200;
 }
