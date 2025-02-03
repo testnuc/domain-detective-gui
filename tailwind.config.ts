@@ -25,14 +25,14 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#4A3AFF",
-          hover: "#3829CC",
-          light: "#6F63FF",
+          DEFAULT: "#FF1493", // Hot pink
+          hover: "#FF69B4", // Lighter pink
+          light: "#FFB6C1", // Even lighter pink
         },
         fandom: {
-          primary: "#4A3AFF",
-          secondary: "#1E0B4B",
-          accent: "#6F63FF",
+          primary: "#FF1493", // Hot pink
+          secondary: "#C71585", // Medium violet red
+          accent: "#FF69B4", // Light pink
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

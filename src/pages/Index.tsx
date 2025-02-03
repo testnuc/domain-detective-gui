@@ -193,7 +193,7 @@ const Index = () => {
 
       <div className="max-w-2xl mx-auto text-center mb-8">
         <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-1">
-          Domain H<Flame className="w-8 h-8 text-orange-500" />nter
+          Domain H<Flame className="w-8 h-8 text-white" />nter
         </h1>
         <p className="text-xl text-white/80">Find professional email addresses in seconds</p>
       </div>
