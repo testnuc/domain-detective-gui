@@ -6,7 +6,6 @@ import { useToast } from '@/hooks/use-toast';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 
-// List of known temporary email domains
 const TEMP_EMAIL_DOMAINS = [
   'tempmail.com',
   'temp-mail.org',
@@ -41,10 +40,7 @@ const AuthComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
 
-  // Determine the redirect URL based on the current environment
-  const getRedirectUrl = () => {
-    return 'https://hunter.hackwithsingh.com';
-  };
+  const redirectUrl = 'https://hunter.hackwithsingh.com';
 
   useEffect(() => {
     // Initialize session
@@ -130,7 +126,7 @@ const AuthComponent = () => {
           },
         }}
         providers={['google']}
-        redirectTo={getRedirectUrl()}
+        redirectTo={redirectUrl}
         theme="dark"
         localization={{
           variables: {
