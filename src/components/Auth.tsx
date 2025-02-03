@@ -4,11 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
-import { useNavigate } from 'react-router-dom';
 
 const AuthComponent = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
 
@@ -19,7 +17,7 @@ const AuthComponent = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        navigate('/');
+        window.location.href = redirectUrl;
       }
     });
 
@@ -34,7 +32,7 @@ const AuthComponent = () => {
           title: "Success",
           description: "Successfully signed in!",
         });
-        navigate('/');
+        window.location.href = redirectUrl;
       } else if (event === 'SIGNED_OUT') {
         toast({
           title: "Success",
@@ -46,11 +44,11 @@ const AuthComponent = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [toast, navigate]);
+  }, [toast]);
 
   if (isLoading) {
     return (
-      <div className="max-w-md mx-auto mt-16 p-6 glass-dark rounded-lg shadow-xl">
+      <div className="w-full max-w-md mx-auto p-6 glass-dark rounded-lg shadow-xl">
         <div className="text-center text-white">
           Loading...
         </div>
@@ -59,7 +57,7 @@ const AuthComponent = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-16 p-6 glass-dark rounded-lg shadow-xl">
+    <div className="w-full max-w-md mx-auto p-6 glass-dark rounded-lg shadow-xl">
       <Auth
         supabaseClient={supabase}
         appearance={{
