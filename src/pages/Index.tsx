@@ -8,6 +8,7 @@ import CelebrationScreen from '@/components/CelebrationScreen';
 import ResultCard, { EmailResult } from '@/components/ResultCard';
 import { OutscraperService } from '@/utils/OutscraperService';
 import { format } from 'date-fns';
+import GiftButton from '@/components/GiftButton';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -183,6 +184,7 @@ const Index = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 relative">
+      <GiftButton />
       <button
         onClick={handleLogout}
         className="absolute top-4 right-4 flex items-center gap-2 text-white/80 hover:text-white transition-colors glass px-4 py-2 rounded-full"
