@@ -90,41 +90,6 @@ const AuthComponent = () => {
     };
   }, [toast, navigate]);
 
-  // Custom sign up handler
-  const handleSignUp = async ({ email, password }: { email: string; password: string }) => {
-    if (!isValidEmail(email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Gmail aliases and temporary email addresses are not allowed.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Please check your email to verify your account.",
-      });
-    }
-    setIsLoading(false);
-  };
-
   if (isLoading) {
     return (
       <div className="max-w-md mx-auto mt-16 p-6 glass-dark rounded-lg shadow-xl">
@@ -161,7 +126,6 @@ const AuthComponent = () => {
         providers={[]}
         redirectTo={window.location.origin}
         theme="dark"
-        onSignUp={handleSignUp}
         localization={{
           variables: {
             sign_up: {
