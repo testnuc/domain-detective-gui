@@ -87,12 +87,19 @@ const AuthComponent = () => {
         providers={[]}
         redirectTo={window.location.origin}
         theme="dark"
-        onError={(error) => {
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Invalid email or password. Please try again.",
-          });
+        localization={{
+          variables: {
+            sign_in: {
+              email_input_placeholder: 'Your email',
+              password_input_placeholder: 'Your password',
+              email_label: 'Email',
+              password_label: 'Password',
+              button_label: 'Sign in',
+              loading_button_label: 'Signing in ...',
+              social_provider_text: 'Sign in with {{provider}}',
+              link_text: "Already have an account? Sign in",
+            },
+          },
         }}
       />
     </div>
